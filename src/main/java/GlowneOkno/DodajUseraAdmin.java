@@ -36,7 +36,7 @@ public class DodajUseraAdmin extends JFrame {
     JPanel panelZachodni;
     DefaultTableModel model;
     JTable table;
-    String haslo;
+    String haslo,Login;
     JavaMailSender javaMailSender;
     public DodajUseraAdmin(uzytkownicyRepozytorium repozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender) {
         this.repozytorium = repozytorium;
@@ -80,7 +80,7 @@ public class DodajUseraAdmin extends JFrame {
         JLabel jLogin,jMail,jWybranaFirma;
 
         LimitowanyText tLogin=new LimitowanyText(20,false);
-        LimitowanyText tMail=new LimitowanyText(20,false);
+        LimitowanyText tMail=new LimitowanyText(40,false);
         JButton jWybierzFirme;
 
         jLogin=new JLabel();
@@ -123,11 +123,17 @@ public class DodajUseraAdmin extends JFrame {
             String mail=tMail.getText().trim();
             if(SprawdzMaila(mail))
             {
-                String Login=tLogin.getText().trim();
-               haslo=GenerujHasloPoczatkowe(10);
-                System.out.println("Wgenerowane haslo to "+haslo);
-                metody.WyslijMailaoZarejestrowaniuNowegoUzytkownikaPrzezAdmina("gorniktrans@gmail.com",Login,haslo,javaMailSender);
 
+                Login=tLogin.getText().trim();
+               haslo=GenerujHasloPoczatkowe(10);
+
+                DodajUzytkownika(Login,haslo,mail,IdZleceniodawcy);
+
+                metody.WyslijMailaoZarejestrowaniuNowegoUzytkownikaPrzezAdmina(mail,Login,haslo,javaMailSender);
+
+                JOptionPane.showMessageDialog(this, "Wysłano wiadomość do rejestracji dla  : " + Login +"\n"+"Mail "+mail);
+
+                jDialog.dispose();
 
             }
             else {
@@ -261,7 +267,11 @@ public class DodajUseraAdmin extends JFrame {
         }
         return sb.toString();
     }
-
+public void DodajUzytkownika(String login,String haslo,String mail,int idFirmy)
+{
+    uzytkownicy Uzytkownicy=new uzytkownicy(login,haslo,mail,idFirmy);
+    repozytorium.save(Uzytkownicy);
+}
 
 }
 
