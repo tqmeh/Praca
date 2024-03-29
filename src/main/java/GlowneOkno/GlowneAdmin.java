@@ -32,7 +32,7 @@ public class GlowneAdmin extends JFrame {
        ImageIcon icon1=metody.PrzeskalujObraz(icon,80,80);
        bDodajUsera=metody.StworzPrzyciskzObrazem(bDodajUsera,"Dodaj użytkownika",icon1,140,100);
         bDodajUsera.addActionListener(e -> {
-            dispose();
+
 
             DodajUseraAdmin dodajUseraAdmin=new DodajUseraAdmin(uzytkownicyRepozytorium,firmaRepozytorium,javaMailSender);
             dodajUseraAdmin.setVisible(true);

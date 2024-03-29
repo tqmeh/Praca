@@ -11,6 +11,7 @@ import Repozytoria.uzytkownicyRepozytorium;
 import Repozytoria.firmaRepozytorium;
 import Encje.uzytkownicy;
 import Encje.firma;
+import org.springframework.cglib.transform.impl.AddInitTransformer;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class DodajUseraAdmin extends JFrame {
     private final uzytkownicyRepozytorium repozytorium;
     private final firmaRepozytorium firmaRepozytorium;
 
-
+    int CheckBoxWlasciciel, CheckBoxAdministrator;
     int IdZleceniodawcy;
     Metody metody=new Metody();
     JButton bDodaj,bMinus,bDodaj1,bZapisz;
@@ -36,7 +37,7 @@ public class DodajUseraAdmin extends JFrame {
     JPanel panelZachodni;
     DefaultTableModel model;
     JTable table;
-    String haslo,Login;
+    String haslo,Login,NazwaFirmy;
     JavaMailSender javaMailSender;
     public DodajUseraAdmin(uzytkownicyRepozytorium repozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender) {
         this.repozytorium = repozytorium;
@@ -53,31 +54,43 @@ public class DodajUseraAdmin extends JFrame {
         ImageIcon Plus1=metody.PrzeskalujObraz(Plus,20,20);
         ImageIcon Minus=metody.StworzObrazIcone("minus.jpg");
         ImageIcon Minus1=metody.PrzeskalujObraz(Minus,20,20);
+
+
+
         bDodaj=metody.StworzPrzyciskzObrazemzTekstemObok(bDodaj,"Dodaj",Plus1,100,20);
 
         bDodaj.addActionListener(e -> {
-            StworzDodawanieUzytkownika();
+            StworzDodawanieUzytkownika(this);
         });
         bMinus=metody.StworzPrzyciskzObrazemzTekstemObok(bMinus,"Usuń",Minus1,100,20);
         bMinus.setEnabled(false);
+        bMinus.addActionListener(e -> {
+            UsunzBazyDanych();
+        });
         panelZachodni.add(bDodaj);
         panelZachodni.add(bMinus);
+
+
         add(panelZachodni);
         add(panelZachodni);
         setVisible(true);
+        DodajTabele();
         add(panelZachodni,BorderLayout.WEST);
 
     }
-    public void StworzDodawanieUzytkownika()
+    public void StworzDodawanieUzytkownika(DodajUseraAdmin okno)
     {
         JDialog jDialog=new JDialog();
         jDialog.setTitle("Dodaj użytkownika");
-        jDialog.setSize(400,200);
+        jDialog.setSize(400,300);
         jDialog.setLayout(null);
         jDialog.setVisible(true);
         jDialog.setLocationRelativeTo(null);
 
-        JLabel jLogin,jMail,jWybranaFirma;
+        JCheckBox checkBoxAdministrator=new JCheckBox();
+        JCheckBox checkBoxWlasciciel=new JCheckBox();
+
+        JLabel jLogin,jMail,jWybranaFirma,jAdministrator,jWlasciciel;
 
         LimitowanyText tLogin=new LimitowanyText(20,false);
         LimitowanyText tMail=new LimitowanyText(40,false);
@@ -86,6 +99,8 @@ public class DodajUseraAdmin extends JFrame {
         jLogin=new JLabel();
         jMail=new JLabel();
         jWybranaFirma=new JLabel();
+        jAdministrator=new JLabel();
+        jWlasciciel=new JLabel();
 
 
         bZapisz=new JButton();
@@ -98,12 +113,27 @@ public class DodajUseraAdmin extends JFrame {
         jMail.setText("Podaj maila");
         jMail.setBounds(10,40,100,20);
         jDialog.add(jMail);
+
+        jAdministrator.setText("Administator");
+        jAdministrator.setBounds(10,70,100,20);
+        jDialog.add(jAdministrator);
+
+        checkBoxAdministrator.setBounds(120,70,20,20);
+        jDialog.add(checkBoxAdministrator);
+
+        jWlasciciel.setText("Wlaściciel");
+        jWlasciciel.setBounds(10,100,100,20);
+        jDialog.add(jWlasciciel);
+
+        checkBoxWlasciciel.setBounds(120,100,20,20);
+        jDialog.add(checkBoxWlasciciel);
+
         jWybranaFirma.setText("Wybrana firma");
-        jWybranaFirma.setBounds(10,70,100,20);
+        jWybranaFirma.setBounds(10,130,100,20);
         jDialog.add(jWybranaFirma);
 
         jWybranaFirmaprzezUzytkownika.setVisible(false);
-        jWybranaFirmaprzezUzytkownika.setBounds(120,70,180,20);
+        jWybranaFirmaprzezUzytkownika.setBounds(120,130,180,20);
         jDialog.add(jWybranaFirmaprzezUzytkownika);
 
         tLogin.setBounds(120,10,100,20);
@@ -113,27 +143,56 @@ public class DodajUseraAdmin extends JFrame {
         jDialog.add(tMail);
 
         jWybierzFirme.setText("Wybierz firmę");
-        jWybierzFirme.setBounds(130,100,150,20);
+        jWybierzFirme.setBounds(130,170,150,20);
         jDialog.add(jWybierzFirme);
 
+        checkBoxAdministrator.addActionListener(e1 -> {
+            if(checkBoxAdministrator.isSelected())
+            {
+                checkBoxWlasciciel.setSelected(false);
+                CheckBoxAdministrator=1;
+                CheckBoxWlasciciel=0;
+            }
+        });
+        checkBoxWlasciciel.addActionListener(e1 -> {
+            if(checkBoxWlasciciel.isSelected())
+            {
+                checkBoxAdministrator.setSelected(false);
+                CheckBoxWlasciciel=1;
+                CheckBoxAdministrator=0;
+            }
+        });
         bZapisz.setText("Zapisz");
-        bZapisz.setBounds(130,130,100,20);
+        bZapisz.setBounds(130,200,100,20);
         bZapisz.setEnabled(false);
         bZapisz.addActionListener(e -> {
+
             String mail=tMail.getText().trim();
             if(SprawdzMaila(mail))
             {
 
-                Login=tLogin.getText().trim();
-               haslo=GenerujHasloPoczatkowe(10);
+                if(checkBoxWlasciciel.isSelected()||checkBoxAdministrator.isSelected()) {
+                    System.out.println("Sprawdzam wlascieiciela " + CheckBoxWlasciciel);
+                    System.out.println("Sprawdzam Administratora " + CheckBoxAdministrator);
 
-                DodajUzytkownika(Login,haslo,mail,IdZleceniodawcy);
+                    Login = tLogin.getText().trim();
+                    haslo = GenerujHasloPoczatkowe(10);
 
-                metody.WyslijMailaoZarejestrowaniuNowegoUzytkownikaPrzezAdmina(mail,Login,haslo,javaMailSender);
+                    DodajUzytkownika(Login, haslo, mail, IdZleceniodawcy, CheckBoxWlasciciel, CheckBoxAdministrator,1);
 
-                JOptionPane.showMessageDialog(this, "Wysłano wiadomość do rejestracji dla  : " + Login +"\n"+"Mail "+mail);
+                    metody.WyslijMailaoZarejestrowaniuNowegoUzytkownikaPrzezAdmina(mail, Login, haslo, javaMailSender);
 
-                jDialog.dispose();
+                    JOptionPane.showMessageDialog(this, "Dodano nowego użytkownika o nazwie " + Login + "\n" +
+                            "Wysłano wiadomość do rejestracji dla  : " + Login + "\n" + "Mail " + mail);
+
+                    jDialog.dispose();
+
+                }
+                else
+                {
+                    metody.WyswietlKomunikatoBledzie("Nie wybrałeś funkcji nowego użytkownika");
+                }
+
 
             }
             else {
@@ -226,6 +285,8 @@ public class DodajUseraAdmin extends JFrame {
             if(WybranyWiersz!=-1) {
 
                 IdZleceniodawcy = (Integer) table.getValueAt(WybranyWiersz, 0);
+                NazwaFirmy=(String) table.getValueAt(WybranyWiersz,1);
+
                 Object wartosc=table.getValueAt(WybranyWiersz,1);
                 if(wartosc!=null)
                 {
@@ -235,6 +296,7 @@ public class DodajUseraAdmin extends JFrame {
                     bZapisz.setEnabled(true);
                 }
                 System.out.println("ID wybranego zleceniodawcy to "+IdZleceniodawcy);
+                System.out.println("Nazwa firmy to "+NazwaFirmy);
                 jDialog.dispose();
             }
             else
@@ -267,11 +329,69 @@ public class DodajUseraAdmin extends JFrame {
         }
         return sb.toString();
     }
-public void DodajUzytkownika(String login,String haslo,String mail,int idFirmy)
+public void DodajUzytkownika(String login,String haslo,String mail,int idFirmy,int wlasciciel,int administrator,int zmiana_hasla)
 {
-    uzytkownicy Uzytkownicy=new uzytkownicy(login,haslo,mail,idFirmy);
+    uzytkownicy Uzytkownicy=new uzytkownicy(login,haslo,mail,idFirmy,NazwaFirmy,wlasciciel,administrator,zmiana_hasla);
     repozytorium.save(Uzytkownicy);
 }
+
+public void DodajTabele()
+{
+    List<Encje.uzytkownicy> uzytkownicyList=repozytorium.findAll();
+    Object[][] dane=new Object[uzytkownicyList.size()][8];
+    for(int i=0;i<uzytkownicyList.size();i++)
+    {
+        uzytkownicy uzytkownicy1=uzytkownicyList.get(i);
+        dane[i][0]=uzytkownicy1.getId();
+        dane[i][1]=uzytkownicy1.getLogin();
+        dane[i][2]=uzytkownicy1.getMail();
+        dane[i][3]=uzytkownicy1.getId_firmy();
+        dane[i][4]=uzytkownicy1.getNazwa_firmy();
+        dane[i][5]=uzytkownicy1.getWlasciciel();
+        dane[i][6]=uzytkownicy1.getAdministrator();
+        dane[i][7]=uzytkownicy1.getZmiana_hasla();
+
+
+    }
+    String[] NazwyKolumn=
+            {
+                    "ID","Login","Mail","ID_firmy","Nazwa firmy","Właściciel","Administrator","Wymagana zmiana hasła"
+            };
+
+    model=new DefaultTableModel(dane,NazwyKolumn);
+    table=new JTable();
+    table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            if(!e.getValueIsAdjusting())
+            {
+                if(table.getSelectedRow()!=-1)
+                {
+                    bMinus.setEnabled(true);
+                }
+                else
+                {
+                    bMinus.setEnabled(false);
+                }
+            }
+        }
+    });
+    table.setModel(model);
+    add(new JScrollPane(table), BorderLayout.CENTER);
+}
+public void UsunzBazyDanych()
+{
+    int WybranyWiersz=table.getSelectedRow();
+    if(WybranyWiersz!=-1)
+    {
+        int Id=(Integer) table.getValueAt(WybranyWiersz,0);
+        repozytorium.deleteById(Id);
+        JOptionPane.showMessageDialog(null, "Usunieto uzytkownika o ID "+Id);
+
+    }
+}
+
 
 }
 

@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.security.SecureRandom;
 
 
 public class Metody {
@@ -21,6 +22,19 @@ public class Metody {
         label.setText(napis);
         label.setBounds(a,b,c,d);
         container.add(label);
+    }
+    public void StworzNapisJDialog(JDialog dialog,JLabel label, String napis, int a, int b, int c, int d)
+    {
+
+        label.setText(napis);
+        label.setBounds(a,b,c,d);
+        dialog.add(label);
+    }
+
+    public void StworzJTextFieldJDialog(JDialog dialog,JTextField textField,int a,int b,int c, int d)
+    {
+        textField.setBounds(a,b,c,d);
+        dialog.add(textField);
     }
 
     public JTextField StworzJTextField(Container container,int a,int b, int c,int d)
@@ -41,6 +55,12 @@ public class Metody {
         container.add(jButton);
 
         return jButton;
+    }
+    public void StworzJButtonJDialog(JDialog dialog,JButton button,String napis,int a,int b,int c,int d)
+    {
+        button.setText(napis);
+        button.setBounds(a,b,c,d);
+        dialog.add(button);
     }
 
     public ImageIcon StworzObrazIcone(String sciezka)
@@ -102,6 +122,45 @@ public JButton StworzPrzyciskzObrazem(JButton jButton,String tekst,ImageIcon ico
         wiadomosc.setText("Utworzyliśmy dla Państwa nowe konto"+"\n"+"Login " +login +"\n"+"Hasło "+haslo);
         javaMailSender.send(wiadomosc);
 
+    }
+
+    public  String GenerujKoddlaPotwierdzenia(int dlugosc)
+    {
+        String znaki= "0123456789!@#$%^&*()_+-=[]{}|;:,.<>?qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+        StringBuilder sb=new StringBuilder(dlugosc);
+        SecureRandom losowe=new SecureRandom();
+
+        for(int i=0;i<dlugosc;i++)
+        {
+            int losowyIndex=losowe.nextInt(znaki.length());
+            char losowyZnak=znaki.charAt(losowyIndex);
+            sb.append(losowyZnak);
+        }
+        return sb.toString();
+    }
+    public void WyslijMailazKodemJednorazowym(String mail, String tekst, JavaMailSender javaMailSender,String kod,String tekst1 )
+    {
+        SimpleMailMessage wiadomosc=new SimpleMailMessage();
+        wiadomosc.setFrom("druzynajavy@gmail.com");
+        wiadomosc.setTo(mail);
+        wiadomosc.setSubject(tekst);
+        wiadomosc.setText(tekst1+" "+kod);
+        javaMailSender.send(wiadomosc);
+
+    }
+    public  String GenerujHasloPoczatkowe(int dlugosc)
+    {
+        String znaki= "0123456789!@#$%^&*()_+-=[]{}|;:,.<>?qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
+        StringBuilder sb=new StringBuilder(dlugosc);
+        SecureRandom losowe=new SecureRandom();
+
+        for(int i=0;i<dlugosc;i++)
+        {
+            int losowyIndex=losowe.nextInt(znaki.length());
+            char losowyZnak=znaki.charAt(losowyIndex);
+            sb.append(losowyZnak);
+        }
+        return sb.toString();
     }
 
 }
