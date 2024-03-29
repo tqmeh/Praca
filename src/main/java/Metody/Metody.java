@@ -1,5 +1,8 @@
 package Metody;
 
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -90,6 +93,15 @@ public JButton StworzPrzyciskzObrazem(JButton jButton,String tekst,ImageIcon ico
                 JOptionPane.ERROR_MESSAGE
         );
     }
+    public void WyslijMailaoZarejestrowaniuNowegoUzytkownikaPrzezAdmina(String mail,String login, String haslo, JavaMailSender javaMailSender)
+    {
+        SimpleMailMessage wiadomosc=new SimpleMailMessage();
+        wiadomosc.setFrom("druzynajavy@gmail.com");
+        wiadomosc.setTo(mail);
+        wiadomosc.setSubject("Nowe konto");
+        wiadomosc.setText("Utworzyliśmy dla Państwa nowe konto"+"\n"+"Login " +login +"\n"+"Hasło "+haslo);
+        javaMailSender.send(wiadomosc);
 
+    }
 
 }

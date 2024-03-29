@@ -3,6 +3,8 @@ package GlowneOkno;
 import Metody.Metody;
 import Repozytoria.uzytkownicyRepozytorium;
 import Repozytoria.firmaRepozytorium;
+import org.springframework.mail.javamail.JavaMailSender;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,10 +13,12 @@ public class GlowneAdmin extends JFrame {
     private firmaRepozytorium firmaRepozytorium;
     Metody metody=new Metody();
     JButton bDodajUsera,bDodajFirme;
-    public  GlowneAdmin(uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium)
+    JavaMailSender javaMailSender;
+    public  GlowneAdmin(uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender)
     {
         this.uzytkownicyRepozytorium = uzytkownicyRepozytorium;
         this.firmaRepozytorium=firmaRepozytorium;
+        this.javaMailSender=javaMailSender;
 
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -30,7 +34,7 @@ public class GlowneAdmin extends JFrame {
         bDodajUsera.addActionListener(e -> {
             dispose();
 
-            DodajUseraAdmin dodajUseraAdmin=new DodajUseraAdmin(uzytkownicyRepozytorium,firmaRepozytorium);
+            DodajUseraAdmin dodajUseraAdmin=new DodajUseraAdmin(uzytkownicyRepozytorium,firmaRepozytorium,javaMailSender);
             dodajUseraAdmin.setVisible(true);
         });
 

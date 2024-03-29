@@ -5,6 +5,7 @@ import GlowneOkno.GlowneAdmin;
 import Metody.Metody;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import Repozytoria.uzytkownicyRepozytorium;
@@ -22,16 +23,17 @@ public class Logowanie extends JFrame {
     JTextField tLogin,tHaslo;
     uzytkownicyRepozytorium uzytkownicyRepozytorium;
     firmaRepozytorium firmaRepozytorium;
-
+    JavaMailSender javaMailSender;
     JButton bZaloguj,bWyjdz;
     @Autowired
-    public Logowanie(Repozytoria.uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium) {
+    public Logowanie(Repozytoria.uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender) {
 
         setSize(400, 350);
         setLocationRelativeTo(null);
         setLayout(null);
         this.uzytkownicyRepozytorium=uzytkownicyRepozytorium;
         this.firmaRepozytorium=firmaRepozytorium;
+        this.javaMailSender=javaMailSender;
 
 
         metody.StworzNapis(this, lLogin, "Login", 10, 10, 100, 20);
@@ -61,7 +63,7 @@ public class Logowanie extends JFrame {
 
                     JOptionPane.showMessageDialog(this, "Zalogowano pomyślnie jako: " + login);
                     dispose();
-                    GlowneAdmin glowneAdmin=new GlowneAdmin(uzytkownicyRepozytorium,firmaRepozytorium);
+                    GlowneAdmin glowneAdmin=new GlowneAdmin(uzytkownicyRepozytorium,firmaRepozytorium,javaMailSender);
                     glowneAdmin.setVisible(true);
 
                 } else {

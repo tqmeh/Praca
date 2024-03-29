@@ -11,6 +11,8 @@ import Repozytoria.uzytkownicyRepozytorium;
 import Repozytoria.firmaRepozytorium;
 import Encje.uzytkownicy;
 import Encje.firma;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import Metody.Metody;
 import Ograniczenia.LimitowanyText;
@@ -34,9 +36,12 @@ public class DodajUseraAdmin extends JFrame {
     JPanel panelZachodni;
     DefaultTableModel model;
     JTable table;
-    public DodajUseraAdmin(uzytkownicyRepozytorium repozytorium,firmaRepozytorium firmaRepozytorium) {
+    String haslo;
+    JavaMailSender javaMailSender;
+    public DodajUseraAdmin(uzytkownicyRepozytorium repozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender) {
         this.repozytorium = repozytorium;
         this.firmaRepozytorium=firmaRepozytorium;
+        this.javaMailSender=javaMailSender;
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
@@ -118,9 +123,11 @@ public class DodajUseraAdmin extends JFrame {
             String mail=tMail.getText().trim();
             if(SprawdzMaila(mail))
             {
-
-               String haslo=GenerujHasloPoczatkowe(10);
+                String Login=tLogin.getText().trim();
+               haslo=GenerujHasloPoczatkowe(10);
                 System.out.println("Wgenerowane haslo to "+haslo);
+                metody.WyslijMailaoZarejestrowaniuNowegoUzytkownikaPrzezAdmina("gorniktrans@gmail.com",Login,haslo,javaMailSender);
+
 
             }
             else {
@@ -254,5 +261,7 @@ public class DodajUseraAdmin extends JFrame {
         }
         return sb.toString();
     }
+
+
 }
 
