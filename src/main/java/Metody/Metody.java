@@ -1,5 +1,6 @@
 package Metody;
 
+import Ograniczenia.LimitowanyText;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -161,6 +162,18 @@ public JButton StworzPrzyciskzObrazem(JButton jButton,String tekst,ImageIcon ico
             sb.append(losowyZnak);
         }
         return sb.toString();
+    }
+    public void StworzNapisPanel(JLabel label,String napis,int a,int b,int c,int d,JPanel panel)
+    {
+
+        label.setText(napis);
+        label.setBounds(a,b,c,d);
+        panel.add(label);
+    }
+    public void StworzLimitowanyText(LimitowanyText limitowanyText,int a,int b,int c,int d,JPanel panel)
+    {
+        limitowanyText.setBounds(a,b,c,d);
+        panel.add(limitowanyText);
     }
 
 }

@@ -202,6 +202,7 @@ public class DodajFirmeAdmin extends JFrame {
 
             firma Firma=new firma(Nazwa,Ulica,Numer_Domu,Numer_Mieszkania,Kod_Pocztowy,Miasto,NIP,REGON);
             firmaRepozytorium.save(Firma);
+            JOptionPane.showMessageDialog(this, "Dodano nową firmę o nazwie "+Nazwa);
 
         }
     }

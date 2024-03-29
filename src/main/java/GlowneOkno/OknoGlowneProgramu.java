@@ -14,7 +14,7 @@ public class OknoGlowneProgramu extends JFrame {
      Metody metody=new Metody();
         private int userID;
         uzytkownicyRepozytorium UzytkownicyRepozytorium;
-     JButton bUstawienia;
+     JButton bUstawienia,bZlecenie;
     public OknoGlowneProgramu(int userID, uzytkownicyRepozytorium UzytkownicyRepozytorium,JavaMailSender javaMailSender)
     {
 
@@ -27,7 +27,10 @@ public class OknoGlowneProgramu extends JFrame {
         panelPolnocny.setLayout(new FlowLayout());
         ImageIcon icon =metody.StworzObrazIcone("ustawienia.jpg");
         ImageIcon icon1=metody.PrzeskalujObraz(icon,80,80);
+        ImageIcon iconZlecenie =metody.StworzObrazIcone("DodajZlecenie.jpg");
+        ImageIcon iconZlecenie1=metody.PrzeskalujObraz(iconZlecenie,80,80);
         bUstawienia=metody.StworzPrzyciskzObrazem(bUstawienia,"Ustawienia",icon1,140,100);
+        bZlecenie=metody.StworzPrzyciskzObrazem(bZlecenie,"Zlecenia",iconZlecenie1,140,100);
         bUstawienia.setVisible(false);
 
 
@@ -43,8 +46,13 @@ public class OknoGlowneProgramu extends JFrame {
             ustawieniaWlasciciel.setVisible(true);
 
         });
+        bZlecenie.addActionListener(e -> {
+            Zlecenie zlecenie=new Zlecenie();
+            zlecenie.setVisible(true);
+        });
 
         panelPolnocny.add(bUstawienia);
+        panelPolnocny.add(bZlecenie);
         add(panelPolnocny,BorderLayout.NORTH);
     }
 }

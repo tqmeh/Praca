@@ -5,6 +5,8 @@ import GlowneOkno.DodajUseraAdmin;
 import Metody.Metody;
 import Repozytoria.*;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import Encje.*;
@@ -52,6 +54,9 @@ public class UstawieniaWlasciciel extends JFrame {
 
         bMinus=metody.StworzPrzyciskzObrazemzTekstemObok(bMinus,"Usuń",Minus1,100,20);
         bMinus.setEnabled(false);
+        bMinus.addActionListener(e -> {
+            UsunzBazyDanych();
+        });
         panelZachodni.add(bDodaj);
         panelZachodni.add(bMinus);
         add(panelZachodni);
@@ -151,7 +156,34 @@ public class UstawieniaWlasciciel extends JFrame {
         model = new DefaultTableModel(dane, NazwyKolumn);
         table = new JTable();
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // pojedynczy tylko moze byc wybrany wiersz
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(!e.getValueIsAdjusting())
+                {
+                    if(table.getSelectedRow()!=-1)
+                    {
+                        bMinus.setEnabled(true);
+                    }
+                    else
+                    {
+                        bMinus.setEnabled(false);
+                    }
+                }
+            }
+        });
         table.setModel(model);
         add(new JScrollPane(table), BorderLayout.CENTER);
+    }
+    public void UsunzBazyDanych()
+    {
+        int WybranyWiersz=table.getSelectedRow();
+        if(WybranyWiersz!=-1)
+        {
+            int Id=(Integer) table.getValueAt(WybranyWiersz,0);
+            UzytkownicyRepozytoria.deleteById(Id);
+            JOptionPane.showMessageDialog(null, "Usunieto uzytkownika o ID "+Id);
+
+        }
     }
 }
