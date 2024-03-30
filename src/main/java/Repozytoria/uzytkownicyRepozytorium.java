@@ -27,5 +27,8 @@ public interface uzytkownicyRepozytorium extends JpaRepository<Encje.uzytkownicy
     @Query("SELECT u FROM uzytkownicy u WHERE u.id_firmy = :firmaId")
     List<Encje.uzytkownicy> findUsersByFirmaIdLista(@Param("firmaId") Integer firmaId);
 
+    @Query("SELECT u.login FROM uzytkownicy u WHERE u.id = :userId")
+    String findNazwaUzytkownikaById(@Param("userId")Integer userId);
+
 
 }

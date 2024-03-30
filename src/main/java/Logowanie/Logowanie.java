@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import Repozytoria.uzytkownicyRepozytorium;
 import Repozytoria.firmaRepozytorium;
+import Repozytoria.krajRepozytorium;
+import Repozytoria.zleceniodawcaRepozytorium;
 import javax.swing.*;
 import java.util.Optional;
 
@@ -24,19 +26,25 @@ public class Logowanie extends JFrame {
     JTextField tLogin,tHaslo;
     uzytkownicyRepozytorium uzytkownicyRepozytorium;
     firmaRepozytorium firmaRepozytorium;
+    krajRepozytorium KrajRepozytorium;
     JavaMailSender javaMailSender;
     JButton bZaloguj,bWyjdz;
     String haslo,mail,login1,haslo1;
     uzytkownicy user;
+    zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
     @Autowired
-    public Logowanie(Repozytoria.uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender) {
+
+    public Logowanie(Repozytoria.uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
+                     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium) {
 
         setSize(400, 350);
         setLocationRelativeTo(null);
         setLayout(null);
+        this.KrajRepozytorium=KrajRepozytorium;
         this.uzytkownicyRepozytorium=uzytkownicyRepozytorium;
         this.firmaRepozytorium=firmaRepozytorium;
         this.javaMailSender=javaMailSender;
+        this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
 
 
         metody.StworzNapis(this, lLogin, "Login", 10, 10, 100, 20);
@@ -81,7 +89,7 @@ public class Logowanie extends JFrame {
                             ZmienHaslo();
                         }
                         else {
-                            OknoGlowneProgramu oknoGlowneProgramu=new OknoGlowneProgramu(user.getId(),uzytkownicyRepozytorium,javaMailSender);
+                            OknoGlowneProgramu oknoGlowneProgramu=new OknoGlowneProgramu(user.getId(),uzytkownicyRepozytorium,javaMailSender,KrajRepozytorium,ZleceniodawcaRepozytorium);
                             oknoGlowneProgramu.setVisible(true);
                         }
                     }

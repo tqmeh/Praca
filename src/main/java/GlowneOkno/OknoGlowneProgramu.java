@@ -14,13 +14,17 @@ public class OknoGlowneProgramu extends JFrame {
      Metody metody=new Metody();
         private int userID;
         uzytkownicyRepozytorium UzytkownicyRepozytorium;
+        krajRepozytorium KrajRepozytorium;
+        zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
      JButton bUstawienia,bZlecenie;
-    public OknoGlowneProgramu(int userID, uzytkownicyRepozytorium UzytkownicyRepozytorium,JavaMailSender javaMailSender)
+    public OknoGlowneProgramu(int userID, uzytkownicyRepozytorium UzytkownicyRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
+                              zleceniodawcaRepozytorium ZleceniodawcaRepozytorium)
     {
-
+        this.KrajRepozytorium=KrajRepozytorium;
         this.userID=userID;
         this.UzytkownicyRepozytorium=UzytkownicyRepozytorium;
         this.javaMailSender=javaMailSender;
+        this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
         JPanel panelPolnocny=new JPanel();
@@ -47,8 +51,9 @@ public class OknoGlowneProgramu extends JFrame {
 
         });
         bZlecenie.addActionListener(e -> {
-            Zlecenie zlecenie=new Zlecenie();
+            Zlecenie zlecenie=new Zlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID);
             zlecenie.setVisible(true);
+            System.out.println("Numer Id to "+userID);
         });
 
         panelPolnocny.add(bUstawienia);

@@ -1,6 +1,7 @@
 package Metody;
 
 import Ograniczenia.LimitowanyText;
+import Ograniczenia.LimitowanyTextArea;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -24,6 +25,7 @@ public class Metody {
         label.setBounds(a,b,c,d);
         container.add(label);
     }
+
     public void StworzNapisJDialog(JDialog dialog,JLabel label, String napis, int a, int b, int c, int d)
     {
 
@@ -57,6 +59,7 @@ public class Metody {
 
         return jButton;
     }
+
     public void StworzJButtonJDialog(JDialog dialog,JButton button,String napis,int a,int b,int c,int d)
     {
         button.setText(napis);
@@ -88,6 +91,12 @@ public ImageIcon PrzeskalujObraz(ImageIcon icon,int szerokosc,int wysokosc) {
     return new ImageIcon(przeskaluj);
 }
 
+    public JButton StworzPrzyciskzObrazembezTekstuzWyboremUmiejscowienia(ImageIcon imageIcon, int a, int b, int c, int d, JPanel panel) {
+        JButton jButton = new JButton(imageIcon);
+        jButton.setBounds(a, b, c, d);
+        panel.add(jButton);
+        return jButton;
+    }
 public JButton StworzPrzyciskzObrazem(JButton jButton,String tekst,ImageIcon icon,int a,int b)
 {
     jButton=new JButton(tekst,icon);
@@ -175,5 +184,19 @@ public JButton StworzPrzyciskzObrazem(JButton jButton,String tekst,ImageIcon ico
         limitowanyText.setBounds(a,b,c,d);
         panel.add(limitowanyText);
     }
+    public void StworzLimitowanyTextjDialog(LimitowanyText limitowanyText,int a,int b,int c, int d,JDialog jDialog)
+    {
+        limitowanyText.setBounds(a,b,c,d);
+        jDialog.add(limitowanyText);
+    }
+    public void StworzLimitowanyTextAreajDialog(LimitowanyTextArea limitowanyTextArea,int a,int b,int c, int d,JDialog jDialog)
+    {
+        limitowanyTextArea.setBounds(a,b,c,d);
+        limitowanyTextArea.setWrapStyleWord(true);
+        limitowanyTextArea.setLineWrap(true);
+        limitowanyTextArea.setCaretPosition(0);
+        jDialog.add(limitowanyTextArea);
+    }
+
 
 }
