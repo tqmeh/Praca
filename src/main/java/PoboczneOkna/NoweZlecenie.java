@@ -22,9 +22,12 @@ public class NoweZlecenie extends JFrame {
     krajRepozytorium KrajRepozytorium;
     uzytkownicyRepozytorium UzytkownicyRepozytorium;
     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
+    przewoznikRepozytorium PrzewoznikRepozytorium;
+
+
     private int userID;
     public NoweZlecenie(krajRepozytorium KrajRepozytorium,uzytkownicyRepozytorium UzytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,
-                        int userID)
+                        int userID,przewoznikRepozytorium PrzewoznikRepozytorium)
     {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
@@ -32,6 +35,7 @@ public class NoweZlecenie extends JFrame {
         this.UzytkownicyRepozytorium=UzytkownicyRepozytorium;
         this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
         this.userID=userID;
+        this.PrzewoznikRepozytorium=PrzewoznikRepozytorium;
         PanelZachodni=StworzPanelZachodni();
         PanelPolnocny=StworzPanelPolnocny();
         PanelCentralny=StworzPanelCentralny();
@@ -44,6 +48,12 @@ public class NoweZlecenie extends JFrame {
         JPanel panel=new JPanel();
         panel.setBackground(Color.red);
         panel.setPreferredSize(new Dimension(100,100));
+        JButton jButton=new JButton();
+        jButton.setText("cos tam");
+        jButton.addActionListener(e -> {
+            System.out.println("ZLeceniodawca to "+tZleceniodawca.getText());
+        });
+        panel.add(jButton);
         add(panel,BorderLayout.WEST);
         return panel;
     }
@@ -130,12 +140,16 @@ public class NoweZlecenie extends JFrame {
         ImageIcon Plus1=metody.PrzeskalujObraz(Plus,20,20);
         bDodajZleceniodawce=metody.StworzPrzyciskzObrazembezTekstuzWyboremUmiejscowienia(Plus1,290,40,20,20,panel);
         bDodajZleceniodawce.addActionListener(e -> {
-            DodajZleceniodawce dodajZleceniodawce=new DodajZleceniodawce(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID);
+            DodajZleceniodawce dodajZleceniodawce=new DodajZleceniodawce(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID,this);
             dodajZleceniodawce.setVisible(true);
         });
 
 
       bDodajPrzewoznika= metody.StworzPrzyciskzObrazembezTekstuzWyboremUmiejscowienia(Plus1,910,10,20,20,panel);
+      bDodajPrzewoznika.addActionListener(e -> {
+          DodajPrzewoznika dodajPrzewoznika=new DodajPrzewoznika(KrajRepozytorium,UzytkownicyRepozytorium,PrzewoznikRepozytorium,userID,this);
+          dodajPrzewoznika.setVisible(true);
+      });
 
 
 
@@ -216,4 +230,17 @@ public class NoweZlecenie extends JFrame {
         panel.add(aFirmaRozladunku);
         return panel;
     }
+
+
+
+    public void setZleceniodawca(String tekst) {
+
+        tZleceniodawca.setText(tekst);
+
+    }
+    public void settPrzewzonik(String tekst)
+    {
+        tPrzewzonik.setText(tekst);
+    }
+
 }

@@ -31,10 +31,14 @@ public class DodajZleceniodawce extends JFrame {
     double Regon1;
     DefaultTableModel model;
     JTable table;
-    public DodajZleceniodawce(krajRepozytorium KrajRepozytorium,uzytkownicyRepozytorium UzytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium, int userID) {
+    String WybranazTabeliNazwa;
+    NoweZlecenie noweZlecenie;
+    public DodajZleceniodawce(krajRepozytorium KrajRepozytorium,uzytkownicyRepozytorium UzytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium, int userID,NoweZlecenie noweZlecenie) {
         this.KrajRepozytorium=KrajRepozytorium;
         this.UzytkownicyRepozytorium=UzytkownicyRepozytorium;
         this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
+        this.noweZlecenie=noweZlecenie;
+
         this.userID=userID;
         Nazwauzytkownika=UzytkownicyRepozytorium.findNazwaUzytkownikaById(userID);
         NazwaFirmy=UzytkownicyRepozytorium.findNazwaFirmyByUserId(userID);
@@ -66,6 +70,21 @@ public class DodajZleceniodawce extends JFrame {
         ImageIcon Wybierz1=metody.PrzeskalujObraz(Wybierz,20,20);
         bWybierz=metody.StworzPrzyciskzObrazemzTekstemObok(bWybierz,"Wybierz",Wybierz1,100,20);
         bWybierz.setEnabled(false);
+        bWybierz.addActionListener(e -> {
+            int WybranyWiersz=table.getSelectedRow();
+            if(WybranyWiersz!=-1)
+            {
+                Object wartosc=table.getValueAt(WybranyWiersz,2);
+                if(wartosc!=null)
+                {
+                    WybranazTabeliNazwa=wartosc.toString();
+                    System.out.println("Wybrana nazwa to "+WybranazTabeliNazwa);
+                    noweZlecenie.setZleceniodawca(WybranazTabeliNazwa);
+
+                        dispose();
+                }
+            }
+        });
 
 
         add(panelZachodni);

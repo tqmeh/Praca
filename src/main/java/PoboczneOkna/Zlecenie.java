@@ -13,13 +13,15 @@ public class Zlecenie extends JFrame {
     krajRepozytorium KrajRepozytorium;
     uzytkownicyRepozytorium UzytkownicyRepozytorium;
     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
+    przewoznikRepozytorium PrzewoznikRepozytorium;
     private int userID;
     public Zlecenie(krajRepozytorium KrajRepozytorium, uzytkownicyRepozytorium UytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,
-                    int userID)
+                    int userID,przewoznikRepozytorium PrzewoznikRepozytorium)
     {
         this.KrajRepozytorium=KrajRepozytorium;
         this.UzytkownicyRepozytorium=UytkownicyRepozytorium;
         this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
+        this.PrzewoznikRepozytorium=PrzewoznikRepozytorium;
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
         setLayout(new BorderLayout());
@@ -32,7 +34,7 @@ public class Zlecenie extends JFrame {
 
         bDodaj=metody.StworzPrzyciskzObrazemzTekstemObok(bDodaj,"Dodaj",Plus1,100,20);
         bDodaj.addActionListener(e -> {
-            NoweZlecenie noweZlecenie=new NoweZlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID);
+            NoweZlecenie noweZlecenie=new NoweZlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID,PrzewoznikRepozytorium);
             noweZlecenie.setVisible(true);
         });
         panelZachodni.add(bDodaj);

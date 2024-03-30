@@ -13,6 +13,7 @@ import Repozytoria.uzytkownicyRepozytorium;
 import Repozytoria.firmaRepozytorium;
 import Repozytoria.krajRepozytorium;
 import Repozytoria.zleceniodawcaRepozytorium;
+import Repozytoria.przewoznikRepozytorium;
 import javax.swing.*;
 import java.util.Optional;
 
@@ -32,10 +33,12 @@ public class Logowanie extends JFrame {
     String haslo,mail,login1,haslo1;
     uzytkownicy user;
     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
+    przewoznikRepozytorium PrzewoznikRepozytorium;
+
     @Autowired
 
     public Logowanie(Repozytoria.uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
-                     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium) {
+                     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,przewoznikRepozytorium PrzewoznikRepozytorium) {
 
         setSize(400, 350);
         setLocationRelativeTo(null);
@@ -45,6 +48,7 @@ public class Logowanie extends JFrame {
         this.firmaRepozytorium=firmaRepozytorium;
         this.javaMailSender=javaMailSender;
         this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
+        this.PrzewoznikRepozytorium=PrzewoznikRepozytorium;
 
 
         metody.StworzNapis(this, lLogin, "Login", 10, 10, 100, 20);
@@ -89,7 +93,7 @@ public class Logowanie extends JFrame {
                             ZmienHaslo();
                         }
                         else {
-                            OknoGlowneProgramu oknoGlowneProgramu=new OknoGlowneProgramu(user.getId(),uzytkownicyRepozytorium,javaMailSender,KrajRepozytorium,ZleceniodawcaRepozytorium);
+                            OknoGlowneProgramu oknoGlowneProgramu=new OknoGlowneProgramu(user.getId(),uzytkownicyRepozytorium,javaMailSender,KrajRepozytorium,ZleceniodawcaRepozytorium,PrzewoznikRepozytorium);
                             oknoGlowneProgramu.setVisible(true);
                         }
                     }
