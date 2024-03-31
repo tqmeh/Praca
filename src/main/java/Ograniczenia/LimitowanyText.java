@@ -9,9 +9,13 @@ import javax.swing.text.DocumentFilter;
 public class LimitowanyText extends JTextField {
     int MaxDlugosc;
     boolean onlyDigits;
+
     public LimitowanyText(int maxDlugosc, boolean onlyDigits) {
         this.MaxDlugosc = maxDlugosc;
         this.onlyDigits = onlyDigits;
+
+
+
 
         AbstractDocument doc = (AbstractDocument) getDocument();
         doc.setDocumentFilter(new DocumentFilter() {

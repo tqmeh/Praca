@@ -6,13 +6,20 @@ import javax.swing.*;
 import javax.xml.crypto.Data;
 import java.awt.*;
 import Ograniczenia.*;
-import com.toedter.calendar.JDateChooser;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import com.toedter.calendar.JDateChooser;
+import Encje.*;
 public class NoweZlecenie extends JFrame {
     Metody metody=new Metody();
     JPanel PanelZachodni,PanelPolnocny,PanelCentralny;
-    LimitowanyText tZleceniodawca,tNumerZlecenia,tIlosc,tWaga,tGodzinaZaladunku,tGodzinaZaladunku1,tMiejscoscZaladunku,tKodPocztowy,
+    LimitowanyText tZleceniodawca, tNumerZlecenia,tIlosc,tWaga,tGodzinaZaladunku,tGodzinaZaladunku1,tMiejscoscZaladunku,tKodPocztowy,
     tPrzewzonik,tKierowca,tNumeryRejestracyjne,tGodzinaRozladunku,tGodzinaRozladunku1,tMiastoRozladunku,tKodPocztowyRozladunku;
+
     JComboBox cZlecenie,cRodzajTowaru,cKrajZaladunku,cRodzajSamochodu,cKrajRozladunku;
     JDateChooser DataZaladunku,DataRozladunku;
     JTextField tDataZaladunku,tDataRozladunku;
@@ -23,37 +30,67 @@ public class NoweZlecenie extends JFrame {
     uzytkownicyRepozytorium UzytkownicyRepozytorium;
     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
     przewoznikRepozytorium PrzewoznikRepozytorium;
+    wykonawcaRepozytorium WykonawcaRepozytorium;
+
+    samochodRepozytorium SamochodRepozytorium;
+
+    towarRepozytorium TowarRepozytorium;
+    zlecenieRepozytorium ZlecenieRepozytorium;
+
+
+    String sZleceniodawca,sNumerZlecenia,sTowarRodzaj,sIlosc,sWaga,sKrajZaladunku,sGodzinaZaladunku,sGodzinaZaladunku1,
+    sMiejscowoscZaladunku,sKodPocztowyZaladunku,sFirmaZaladunku,sPrzewoznik,sRodzajSamochodu,sKierowca,sNumerRejestracyjny,sKrajRozladunku,
+    sGodzinaRozladunku,sGodzinaRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,sFirmaRozladunku,NazwaFirmy,NazwaUzytkownika;
+    //Dane do wysylki do bazydanych
+    String DataRozladunku1,DataZaladunku1,sTransport;// nie zapomniec o sTransport wybor z cWlasnyTransport
+    int iIlosc,iWaga,IdFirmy;
+
+    JButton bZapisz;
 
 
     private int userID;
     public NoweZlecenie(krajRepozytorium KrajRepozytorium,uzytkownicyRepozytorium UzytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,
-                        int userID,przewoznikRepozytorium PrzewoznikRepozytorium)
+                        int userID,przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,samochodRepozytorium SamochodRepozytorium,
+                        towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium)
     {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
+        NazwaFirmy=UzytkownicyRepozytorium.findNazwaFirmyByUserId(userID);
+        NazwaUzytkownika=UzytkownicyRepozytorium.findNazwaUzytkownikaById(userID);
+        IdFirmy=UzytkownicyRepozytorium.findFirmaIdByUserId(userID);
         this.KrajRepozytorium=KrajRepozytorium;
         this.UzytkownicyRepozytorium=UzytkownicyRepozytorium;
         this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
         this.userID=userID;
         this.PrzewoznikRepozytorium=PrzewoznikRepozytorium;
+        this.WykonawcaRepozytorium=WykonawcaRepozytorium;
+        this.SamochodRepozytorium=SamochodRepozytorium;
+        this.TowarRepozytorium=TowarRepozytorium;
+        this.ZlecenieRepozytorium=ZlecenieRepozytorium;
         PanelZachodni=StworzPanelZachodni();
         PanelPolnocny=StworzPanelPolnocny();
         PanelCentralny=StworzPanelCentralny();
 
         this.add(PanelCentralny, BorderLayout.CENTER);
-
+        SprawdzWykonawceNaPoczatku();
+        tZleceniodawca.setEditable(false);
     }
     public JPanel StworzPanelZachodni()
     {
         JPanel panel=new JPanel();
         panel.setBackground(Color.red);
         panel.setPreferredSize(new Dimension(100,100));
-        JButton jButton=new JButton();
-        jButton.setText("cos tam");
-        jButton.addActionListener(e -> {
-            System.out.println("ZLeceniodawca to "+tZleceniodawca.getText());
+        bZapisz=new JButton();
+        ImageIcon Zapisz = metody.StworzObrazIcone("Akceptuj.png");
+        ImageIcon Zapisz1 = metody.PrzeskalujObraz(Zapisz, 20, 20);
+        bZapisz = metody.StworzPrzyciskzObrazemzTekstemObok(bZapisz, "Zapisz", Zapisz1, 100, 20);
+        bZapisz.addActionListener(e -> {
+            System.out.println("sTransport to "+sTransport);
+            Pobierz();
+            SprawdzCzyWszystkoWypelnione();
         });
-        panel.add(jButton);
+
+        panel.add(bZapisz);
         add(panel,BorderLayout.WEST);
         return panel;
     }
@@ -179,25 +216,50 @@ public class NoweZlecenie extends JFrame {
         lRozladunek.setFont(lRozladunek.getFont().deriveFont(Font.BOLD));
         metody.StworzNapisPanel(lKrajRozladunku,"Kraj",600,340,100,20,panel);
         cKrajRozladunku.setBounds(700,340,160,20);
+        DodajDaneKrajowdoJComboBoxa(cKrajRozladunku);
         metody.StworzNapisPanel(lDataRozladunku,"Data rozładunku",600,370,100,20,panel);
         DataRozladunku.setBounds(700,370,20,20);
+        DataRozladunku.getDateEditor().addPropertyChangeListener(evt -> {
+            if("date".equals(evt.getPropertyName()))
+            {
+                Date wybranaData=DataRozladunku.getDate();
+                SimpleDateFormat formatDaty=new SimpleDateFormat("yyyy-MM-dd");
+                DataRozladunku1=formatDaty.format(wybranaData);
+                tDataRozladunku.setText(DataRozladunku1);
+            }
+        });
         tDataRozladunku.setBounds(725,370,100,20);
+        tDataRozladunku.setEditable(false);
         metody.StworzNapisPanel(lGodzinaRozladunku,"Godzina",840,370,100,20,panel);
         metody.StworzNapisPanel(lMiejscowoscRozladunku,"Miejscowosc",600,400,100,20,panel);
         metody.StworzNapisPanel(lKodPocztowyRozladunku,"Kod pocztowy",600,430,100,20,panel);
         metody.StworzNapisPanel(lFirmaRozladunku,"Firma",600,460,100,20,panel);
         metody.StworzNapisPanel(lKilogramy,"Kg",255,240,20,20,panel);
         cZlecenie.setBounds(120,10,160,20);
+        DodajDaneWykonawcaJComboBoxa(cZlecenie);
+        SprawdzWykonawce(cZlecenie);//sprawdzam cos
         metody.StworzLimitowanyText(tZleceniodawca,120,40,160,20,panel);
         metody.StworzLimitowanyText(tNumerZlecenia,120,70,160,20,panel);
         cRodzajTowaru.setBounds(60,210,160,20);
+        DodajDaneTowarJComboBoxa(cRodzajTowaru);
         metody.StworzLimitowanyText(tIlosc,60,240,60,20,panel);
         metody.StworzLimitowanyText(tWaga,190,240,60,20,panel);
         cKrajZaladunku.setBounds(100,340,160,20);
+        DodajDaneKrajowdoJComboBoxa(cKrajZaladunku);
         metody.StworzLimitowanyText(tGodzinaZaladunku,290,370,30,20,panel);
         metody.StworzLimitowanyText(tGodzinaZaladunku1,332,370,30,20,panel);
         DataZaladunku.setBounds(100,370,20,20);
+        DataZaladunku.getDateEditor().addPropertyChangeListener(evt -> {// ustawienie JDateChooser do wyslania do JTextFielda
+            if("date".equals(evt.getPropertyName()))
+            {
+                Date wybranaData=DataZaladunku.getDate();
+                SimpleDateFormat formatDaty=new SimpleDateFormat("yyyy-MM-dd");
+                DataZaladunku1=formatDaty.format(wybranaData);
+                tDataZaladunku.setText(DataZaladunku1);
+            }
+        });
         tDataZaladunku.setBounds(125,370,100,20);
+        tDataZaladunku.setEditable(false);
         metody.StworzLimitowanyText(tMiejscoscZaladunku,100,400,150,20,panel);
         metody.StworzLimitowanyText(tKodPocztowy,100,430,100,20,panel);
         aFirmaZaladunku.setBounds(100,460,250,70);
@@ -206,6 +268,7 @@ public class NoweZlecenie extends JFrame {
         aFirmaZaladunku.setCaretPosition(0);
         metody.StworzLimitowanyText(tPrzewzonik,720,10,180,20,panel);
         cRodzajSamochodu.setBounds(720,40,180,20);
+        DodajDaneSamochodJComboBoxa(cRodzajSamochodu);
         metody.StworzLimitowanyText(tKierowca,720,70,180,20,panel);
         metody.StworzLimitowanyText(tNumeryRejestracyjne,720,100,150,20,panel);
         metody.StworzLimitowanyText(tGodzinaRozladunku,890,370,30,20,panel);
@@ -242,5 +305,216 @@ public class NoweZlecenie extends JFrame {
     {
         tPrzewzonik.setText(tekst);
     }
+    public void DodajDaneKrajowdoJComboBoxa(JComboBox comboBox) {
+
+        List<kraj> krajList = KrajRepozytorium.findAll();
+        comboBox.removeAllItems();
+        for (Encje.kraj kraj : krajList) {
+            comboBox.addItem(kraj.getKraj());
+        }
+    }
+    public void DodajDaneWykonawcaJComboBoxa(JComboBox comboBox)
+    {
+        List<wykonawca> wykonawcaList=WykonawcaRepozytorium.findAll();
+        comboBox.removeAllItems();
+        for(Encje.wykonawca wykonawca:wykonawcaList)
+        {
+            comboBox.addItem(wykonawca.getNazwa());
+        }
+    }
+    public void DodajDaneSamochodJComboBoxa(JComboBox comboBox)
+    {
+        List<samochod> samochodList=SamochodRepozytorium.findAll();
+        comboBox.removeAllItems();
+        for(Encje.samochod samochod:samochodList)
+        {
+            comboBox.addItem(samochod.getNazwa());
+        }
+    }
+    public void DodajDaneTowarJComboBoxa(JComboBox comboBox)
+    {
+        List<towar> towarList=TowarRepozytorium.findAll();
+        comboBox.removeAllItems();
+        for(Encje.towar towar:towarList)
+        {
+            comboBox.addItem(towar.getNazwa());
+        }
+    }
+    public void SprawdzWykonawce(JComboBox comboBox)
+    {
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object wybranyElement=cZlecenie.getSelectedItem();
+                if(wybranyElement!=null&&wybranyElement.toString().equals("Wlasny transport"))
+                {
+
+                    tPrzewzonik.setEditable(false);
+                    tPrzewzonik.setText(NazwaFirmy);
+                    bDodajPrzewoznika.setEnabled(false);
+                    sTransport=wybranyElement.toString().trim();
+                }
+                else if(wybranyElement!=null&&!wybranyElement.toString().equals("Wlasny transport"))
+                {
+
+                    tPrzewzonik.setEditable(false);
+                    tPrzewzonik.setText("");
+                    bDodajPrzewoznika.setEnabled(true);
+                    sTransport=wybranyElement.toString().trim();
+                }
+            }
+        });
+
+
+    }
+    public void SprawdzWykonawceNaPoczatku()
+    {
+        Object wybranyElement=cZlecenie.getSelectedItem();
+        if(wybranyElement!=null&&wybranyElement.toString().equals("Wlasny transport"))
+        {
+            tPrzewzonik.setEditable(false);
+            tPrzewzonik.setText(NazwaFirmy);
+            bDodajPrzewoznika.setEnabled(false);
+            sTransport=wybranyElement.toString().trim();
+        }
+        else if(wybranyElement!=null&&!wybranyElement.toString().equals("Wlasny transport"))
+        {
+
+            tPrzewzonik.setEditable(false);
+            tPrzewzonik.setText("");
+            bDodajPrzewoznika.setEnabled(true);
+            sTransport=wybranyElement.toString().trim();
+        }
+    }
+    public void Pobierz()
+    {
+        sZleceniodawca=tZleceniodawca.getText().trim();
+        sNumerZlecenia=tNumerZlecenia.getText().trim();
+        sTowarRodzaj=cRodzajTowaru.getSelectedItem().toString();
+        sIlosc=tIlosc.getText().trim();
+        if(!sIlosc.isEmpty())
+        {
+            iIlosc=Integer.parseInt(sIlosc);
+            System.out.println("Waga towaru w incie to "+iIlosc);
+        }
+        sWaga=tWaga.getText().trim();
+        if(!sWaga.isEmpty())
+        {
+            iWaga=Integer.parseInt(sWaga);
+        }
+        DataZaladunku1=tDataZaladunku.getText().trim();
+        DataRozladunku1=tDataRozladunku.getText().trim();
+        sKrajZaladunku=cKrajZaladunku.getSelectedItem().toString();
+        sGodzinaZaladunku=tGodzinaZaladunku.getText().trim();
+        sGodzinaZaladunku1=tGodzinaZaladunku1.getText().trim();
+        sMiejscowoscZaladunku=tMiejscoscZaladunku.getText().trim();
+        sKodPocztowyZaladunku=tKodPocztowy.getText().trim();
+        sFirmaZaladunku=aFirmaZaladunku.getText().trim();
+        sPrzewoznik=tPrzewzonik.getText().trim();
+        sRodzajSamochodu=cRodzajSamochodu.getSelectedItem().toString().trim();
+        sKierowca=tKierowca.getText().trim();
+        sNumerRejestracyjny=tNumerZlecenia.getText().trim();
+        sKrajRozladunku=cKrajRozladunku.getSelectedItem().toString().trim();
+        sGodzinaRozladunku=tGodzinaRozladunku.getText().trim();
+        sGodzinaRozladunku1=tGodzinaRozladunku1.getText().trim();
+        sMiejscowoscRozladunku=tMiastoRozladunku.getText().trim();
+        sKodPocztowyRozladunku=tKodPocztowyRozladunku.getText().trim();
+        sFirmaRozladunku=aFirmaRozladunku.getText().trim();
+
+
+
+
+    }
+    public void SprawdzCzyWszystkoWypelnione()
+    {
+        if(sZleceniodawca.isEmpty())
+        {
+            metody.WyswietlKomunikatoBledzie("Nie wybrałeś zleceniodawcy !");
+        }
+       else if(sIlosc.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wpisałeś ilości towaru");
+       }
+       else if(sWaga.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wpisałeś wagi");
+       }
+       else if(DataZaladunku1.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wybrałeś daty !");
+       }
+       if(sGodzinaZaladunku.isEmpty())
+       {
+           tGodzinaZaladunku.setText("00");
+           sGodzinaZaladunku=tGodzinaZaladunku.getText().trim();
+       }
+        if(sGodzinaZaladunku1.isEmpty())
+       {
+           tGodzinaZaladunku1.setText("00");
+           sGodzinaZaladunku1=tGodzinaZaladunku1.getText().trim();
+       }
+       else if(sMiejscowoscZaladunku.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wpisałeś miasta załadunku");
+       }
+       else if(sKodPocztowyZaladunku.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wpisałeś kodu pocztowego załadunku");
+       }
+       else if(sFirmaZaladunku.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wpisałęś firmy załadunku !");
+       }
+       else if(sPrzewoznik.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wybrałeś przewoźnika !");
+       }
+       else if(DataRozladunku1.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wybrałeś daty rozładunku !");
+       }
+       if(sGodzinaRozladunku.isEmpty())
+       {
+           tGodzinaRozladunku.setText("00");
+           sGodzinaRozladunku=tGodzinaRozladunku.getText().trim();
+       }
+       if(sGodzinaRozladunku1.isEmpty())
+       {
+           tGodzinaRozladunku1.setText("00");
+           sGodzinaRozladunku1=tGodzinaRozladunku1.getText().trim();
+
+       }
+       else if(sMiejscowoscRozladunku.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("nie wpisałeś miejscowości rozładunku");
+       }
+       else if(sKodPocztowyRozladunku.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wpisałeś kodu pocztowego rozładunku !");
+       }
+       else if(sFirmaRozladunku.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wpisałeś firmy rozładunku");
+       }
+       else
+       {
+           JOptionPane.showMessageDialog(this, "Dodano nowe zlecenie");
+           DodajDdBazyDanych(sTransport,sZleceniodawca,sNumerZlecenia,sTowarRodzaj,iIlosc,iWaga,sKrajZaladunku,DataZaladunku1,sMiejscowoscZaladunku,
+                   sKodPocztowyZaladunku,sFirmaZaladunku,sPrzewoznik,sRodzajSamochodu,sKierowca,sNumerRejestracyjny,sKrajRozladunku,DataRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,
+                   sFirmaRozladunku,NazwaFirmy,IdFirmy,NazwaUzytkownika);
+           dispose();
+       }
+    }
+    public void DodajDdBazyDanych(String wykonawca,String zleceniodawa,String numer_zlecenia,String rodzaj_towaru,int ilosc,int waga,String kraj_zaladunku,String data_zaladunku,
+                                  String miejscowosc_zaladunku,String kod_pocztowy_zaladunku,String firma_zaladunek,String przewoznik,String samochod,String kierowca,String numery_rejestracyjne,
+                                  String kraj_rozladunku,String data_rozladunku,String miejscowosc_rozladunku,String kod_pocztowy_rozladunku,String firma_rozladunek, String nazwa_firmy,
+                                  int id_firmy,String nazwa_uzytkownika)
+    {
+        zlecenie Zlecenie=new zlecenie(wykonawca,zleceniodawa,numer_zlecenia,rodzaj_towaru,ilosc,waga,kraj_zaladunku,data_zaladunku,miejscowosc_zaladunku,kod_pocztowy_zaladunku,firma_zaladunek,
+                przewoznik,samochod,kierowca,numery_rejestracyjne,kraj_rozladunku,data_rozladunku,miejscowosc_rozladunku,kod_pocztowy_rozladunku,firma_rozladunek,nazwa_firmy,id_firmy,nazwa_uzytkownika);
+
+        ZlecenieRepozytorium.save(Zlecenie);
+    }
+
 
 }

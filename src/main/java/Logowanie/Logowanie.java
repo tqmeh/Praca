@@ -14,6 +14,10 @@ import Repozytoria.firmaRepozytorium;
 import Repozytoria.krajRepozytorium;
 import Repozytoria.zleceniodawcaRepozytorium;
 import Repozytoria.przewoznikRepozytorium;
+import Repozytoria.wykonawcaRepozytorium;
+import Repozytoria.samochodRepozytorium;
+import Repozytoria.towarRepozytorium;
+import Repozytoria.zlecenieRepozytorium;
 import javax.swing.*;
 import java.util.Optional;
 
@@ -34,11 +38,17 @@ public class Logowanie extends JFrame {
     uzytkownicy user;
     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
     przewoznikRepozytorium PrzewoznikRepozytorium;
+    wykonawcaRepozytorium WykonawcaRepozytorium;
+    samochodRepozytorium SamochodRepozytorium;
+    towarRepozytorium TowarRepozytorium;
+    zlecenieRepozytorium ZlecenieRepozytorium;
+
 
     @Autowired
 
     public Logowanie(Repozytoria.uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
-                     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,przewoznikRepozytorium PrzewoznikRepozytorium) {
+                     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,
+                     samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium) {
 
         setSize(400, 350);
         setLocationRelativeTo(null);
@@ -49,6 +59,10 @@ public class Logowanie extends JFrame {
         this.javaMailSender=javaMailSender;
         this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
         this.PrzewoznikRepozytorium=PrzewoznikRepozytorium;
+        this.WykonawcaRepozytorium=WykonawcaRepozytorium;
+        this.SamochodRepozytorium=SamochodRepozytorium;
+        this.TowarRepozytorium=TowarRepozytorium;
+        this.ZlecenieRepozytorium=ZlecenieRepozytorium;
 
 
         metody.StworzNapis(this, lLogin, "Login", 10, 10, 100, 20);
@@ -93,7 +107,8 @@ public class Logowanie extends JFrame {
                             ZmienHaslo();
                         }
                         else {
-                            OknoGlowneProgramu oknoGlowneProgramu=new OknoGlowneProgramu(user.getId(),uzytkownicyRepozytorium,javaMailSender,KrajRepozytorium,ZleceniodawcaRepozytorium,PrzewoznikRepozytorium);
+                            OknoGlowneProgramu oknoGlowneProgramu=new OknoGlowneProgramu(user.getId(),uzytkownicyRepozytorium,javaMailSender,KrajRepozytorium,ZleceniodawcaRepozytorium,PrzewoznikRepozytorium,WykonawcaRepozytorium,
+                                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium);
                             oknoGlowneProgramu.setVisible(true);
                         }
                     }

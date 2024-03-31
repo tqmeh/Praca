@@ -74,7 +74,7 @@ public class DodajZleceniodawce extends JFrame {
             int WybranyWiersz=table.getSelectedRow();
             if(WybranyWiersz!=-1)
             {
-                Object wartosc=table.getValueAt(WybranyWiersz,2);
+                Object wartosc=table.getValueAt(WybranyWiersz,1);
                 if(wartosc!=null)
                 {
                     WybranazTabeliNazwa=wartosc.toString();

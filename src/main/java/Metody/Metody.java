@@ -1,6 +1,7 @@
 package Metody;
 
 import Ograniczenia.LimitowanyText;
+
 import Ograniczenia.LimitowanyTextArea;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -184,6 +185,8 @@ public JButton StworzPrzyciskzObrazem(JButton jButton,String tekst,ImageIcon ico
         limitowanyText.setBounds(a,b,c,d);
         panel.add(limitowanyText);
     }
+
+
     public void StworzLimitowanyTextjDialog(LimitowanyText limitowanyText,int a,int b,int c, int d,JDialog jDialog)
     {
         limitowanyText.setBounds(a,b,c,d);

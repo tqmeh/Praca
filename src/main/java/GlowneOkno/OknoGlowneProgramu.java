@@ -18,8 +18,14 @@ public class OknoGlowneProgramu extends JFrame {
         zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
      JButton bUstawienia,bZlecenie;
      przewoznikRepozytorium PrzewoznikRepozytorium;
+     wykonawcaRepozytorium WykonawcaRepozytorium;
+     samochodRepozytorium SamochodRepozytorium;
+
+     towarRepozytorium TowarRepozytorium;
+     zlecenieRepozytorium ZlecenieRepozytorium;
     public OknoGlowneProgramu(int userID, uzytkownicyRepozytorium UzytkownicyRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
-                              zleceniodawcaRepozytorium ZleceniodawcaRepozytorium, przewoznikRepozytorium PrzewoznikRepozytorium)
+                              zleceniodawcaRepozytorium ZleceniodawcaRepozytorium, przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,
+                              samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium)
     {
         this.KrajRepozytorium=KrajRepozytorium;
         this.userID=userID;
@@ -27,6 +33,10 @@ public class OknoGlowneProgramu extends JFrame {
         this.javaMailSender=javaMailSender;
         this.ZleceniodawcaRepozytorium=ZleceniodawcaRepozytorium;
         this.PrzewoznikRepozytorium=PrzewoznikRepozytorium;
+        this.WykonawcaRepozytorium=WykonawcaRepozytorium;
+        this.SamochodRepozytorium=SamochodRepozytorium;
+        this.TowarRepozytorium=TowarRepozytorium;
+        this.ZlecenieRepozytorium=ZlecenieRepozytorium;
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
         JPanel panelPolnocny=new JPanel();
@@ -53,7 +63,8 @@ public class OknoGlowneProgramu extends JFrame {
 
         });
         bZlecenie.addActionListener(e -> {
-            Zlecenie zlecenie=new Zlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID,PrzewoznikRepozytorium);
+            Zlecenie zlecenie=new Zlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID,PrzewoznikRepozytorium,WykonawcaRepozytorium,
+                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium);
             zlecenie.setVisible(true);
             System.out.println("Numer Id to "+userID);
         });
