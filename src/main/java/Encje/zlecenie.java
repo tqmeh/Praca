@@ -21,6 +21,7 @@ public class zlecenie {
     private String data_zaladunku;
     private String miejscowosc_zaladunku;
     private String kod_pocztowy_zaladunku;
+    private String ulica_zaladunku;
     private String firma_zaladunek;
     private String przewoznik_nazwa_skrocona;
     private String rodzaj_samochodu;
@@ -30,7 +31,11 @@ public class zlecenie {
     private String data_rozladunku;
     private String miejscowosc_rozladunku;
     private String kod_pocztowy_rozladunku;
+    private String ulica_rozladunku;
     private String firma_rozladunek;
+    private  Double kwota_frachtu;
+    private Double kwota_zlecenia;
+    private String waluta;
     private String nazwa_firmy;
     private int id_firmy;
     private String nazwa_uzytkownika;
@@ -40,7 +45,7 @@ public class zlecenie {
 
     }
 
-    public zlecenie(String wykonawca, String zlecemiodawca_nazwa_skrocona, String numer_zlecenia, String rodzaj_towaru, int ilosc, int waga, String kraj_zaladunku, String data_zaladunku, String miejscowosc_zaladunku, String kod_pocztowy_zaladunku, String firma_zaladunek, String przewoznik_nazwa_skrocona, String rodzaj_samochodu, String kierowca, String numery_rejestracyjne, String kraj_rozladunku, String data_rozladunku, String miejscowosc_rozladunku, String kod_pocztowy_rozladunku, String firma_rozladunek, String nazwa_firmy, int id_firmy, String nazwa_uzytkownika) {
+    public zlecenie(String wykonawca, String zlecemiodawca_nazwa_skrocona, String numer_zlecenia, String rodzaj_towaru, int ilosc, int waga, String kraj_zaladunku, String data_zaladunku, String miejscowosc_zaladunku, String kod_pocztowy_zaladunku,String ulica_zaladunku, String firma_zaladunek, String przewoznik_nazwa_skrocona, String rodzaj_samochodu, String kierowca, String numery_rejestracyjne, String kraj_rozladunku, String data_rozladunku, String miejscowosc_rozladunku, String kod_pocztowy_rozladunku,String ulica_rozladunku, String firma_rozladunek,Double kwota_frachtu,Double kwota_zlecenia, String waluta, String nazwa_firmy, int id_firmy, String nazwa_uzytkownika) {
         this.wykonawca = wykonawca;
         this.zlecemiodawca_nazwa_skrocona = zlecemiodawca_nazwa_skrocona;
         this.numer_zlecenia = numer_zlecenia;
@@ -64,6 +69,11 @@ public class zlecenie {
         this.nazwa_firmy = nazwa_firmy;
         this.id_firmy = id_firmy;
         this.nazwa_uzytkownika = nazwa_uzytkownika;
+        this.ulica_zaladunku=ulica_zaladunku;
+        this.ulica_rozladunku=ulica_rozladunku;
+        this.kwota_frachtu=kwota_frachtu;
+        this.kwota_zlecenia=kwota_zlecenia;
+        this.waluta=waluta;
     }
 
     public int getId() {
@@ -256,5 +266,45 @@ public class zlecenie {
 
     public void setNazwa_uzytkownika(String nazwa_uzytkownika) {
         this.nazwa_uzytkownika = nazwa_uzytkownika;
+    }
+
+    public String getUlica_zaladunku() {
+        return ulica_zaladunku;
+    }
+
+    public void setUlica_zaladunku(String ulica_zaladunku) {
+        this.ulica_zaladunku = ulica_zaladunku;
+    }
+
+    public String getUlica_rozladunku() {
+        return ulica_rozladunku;
+    }
+
+    public void setUlica_rozladunku(String ulica_rozladunku) {
+        this.ulica_rozladunku = ulica_rozladunku;
+    }
+
+    public Double getKwota_frachtu() {
+        return kwota_frachtu;
+    }
+
+    public void setKwota_frachtu(Double kwota_frachtu) {
+        this.kwota_frachtu = kwota_frachtu;
+    }
+
+    public Double getKwota_zlecenia() {
+        return kwota_zlecenia;
+    }
+
+    public void setKwota_zlecenia(Double kwota_zlecenia) {
+        this.kwota_zlecenia = kwota_zlecenia;
+    }
+
+    public String getWaluta() {
+        return waluta;
+    }
+
+    public void setWaluta(String waluta) {
+        this.waluta = waluta;
     }
 }

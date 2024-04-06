@@ -23,9 +23,11 @@ public class OknoGlowneProgramu extends JFrame {
 
      towarRepozytorium TowarRepozytorium;
      zlecenieRepozytorium ZlecenieRepozytorium;
+
+     walutaRepozytorium WalutaRepozytorium;
     public OknoGlowneProgramu(int userID, uzytkownicyRepozytorium UzytkownicyRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
                               zleceniodawcaRepozytorium ZleceniodawcaRepozytorium, przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,
-                              samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium)
+                              samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium)
     {
         this.KrajRepozytorium=KrajRepozytorium;
         this.userID=userID;
@@ -37,6 +39,7 @@ public class OknoGlowneProgramu extends JFrame {
         this.SamochodRepozytorium=SamochodRepozytorium;
         this.TowarRepozytorium=TowarRepozytorium;
         this.ZlecenieRepozytorium=ZlecenieRepozytorium;
+        this.WalutaRepozytorium=WalutaRepozytorium;
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
         JPanel panelPolnocny=new JPanel();
@@ -64,7 +67,7 @@ public class OknoGlowneProgramu extends JFrame {
         });
         bZlecenie.addActionListener(e -> {
             Zlecenie zlecenie=new Zlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID,PrzewoznikRepozytorium,WykonawcaRepozytorium,
-                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium);
+                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium);
             zlecenie.setVisible(true);
             System.out.println("Numer Id to "+userID);
         });

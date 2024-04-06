@@ -16,16 +16,17 @@ import com.toedter.calendar.JDateChooser;
 import Encje.*;
 public class NoweZlecenie extends JFrame {
     Metody metody=new Metody();
-    JPanel PanelZachodni,PanelPolnocny,PanelCentralny;
+    JPanel PanelZachodni,PanelPolnocny,PanelCentralny,PanelCentralny1;
     LimitowanyText tZleceniodawca, tNumerZlecenia,tIlosc,tWaga,tGodzinaZaladunku,tGodzinaZaladunku1,tMiejscoscZaladunku,tKodPocztowy,
-    tPrzewzonik,tKierowca,tNumeryRejestracyjne,tGodzinaRozladunku,tGodzinaRozladunku1,tMiastoRozladunku,tKodPocztowyRozladunku;
+    tPrzewzonik,tKierowca,tNumeryRejestracyjne,tGodzinaRozladunku,tGodzinaRozladunku1,tMiastoRozladunku,tKodPocztowyRozladunku,
+    tKwotaFrachtu,tKwotaZlecenia,tUlicaZaladunku,tUlicaRozladunku;
 
-    JComboBox cZlecenie,cRodzajTowaru,cKrajZaladunku,cRodzajSamochodu,cKrajRozladunku;
+    JComboBox cZlecenie,cRodzajTowaru,cKrajZaladunku,cRodzajSamochodu,cKrajRozladunku,cWaluta;
     JDateChooser DataZaladunku,DataRozladunku;
     JTextField tDataZaladunku,tDataRozladunku;
     JButton bDodajZleceniodawce,bDodajPrzewoznika;
 
-    LimitowanyTextArea aFirmaZaladunku,aFirmaRozladunku;
+    LimitowanyTextArea aFirmaZaladunku,aFirmaRozladunku,aWarunkiZlecenia;
     krajRepozytorium KrajRepozytorium;
     uzytkownicyRepozytorium UzytkownicyRepozytorium;
     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
@@ -37,21 +38,25 @@ public class NoweZlecenie extends JFrame {
     towarRepozytorium TowarRepozytorium;
     zlecenieRepozytorium ZlecenieRepozytorium;
 
+    walutaRepozytorium WalutaRepozytorium;
+
 
     String sZleceniodawca,sNumerZlecenia,sTowarRodzaj,sIlosc,sWaga,sKrajZaladunku,sGodzinaZaladunku,sGodzinaZaladunku1,
     sMiejscowoscZaladunku,sKodPocztowyZaladunku,sFirmaZaladunku,sPrzewoznik,sRodzajSamochodu,sKierowca,sNumerRejestracyjny,sKrajRozladunku,
-    sGodzinaRozladunku,sGodzinaRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,sFirmaRozladunku,NazwaFirmy,NazwaUzytkownika;
+    sGodzinaRozladunku,sGodzinaRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,sFirmaRozladunku,NazwaFirmy,NazwaUzytkownika,
+    sWaluta,sUlicaZaladunku,sUlicaRozladunku,sKwotaFrachtu,sKwotaZlecenia;
     //Dane do wysylki do bazydanych
     String DataRozladunku1,DataZaladunku1,sTransport;// nie zapomniec o sTransport wybor z cWlasnyTransport
     int iIlosc,iWaga,IdFirmy;
 
-    JButton bZapisz;
+    JButton bZapisz,bWyjdz;
+    JTabbedPane zakladka1,zakladka2;
 
-
+    double dKwotaZlecenia,dKwotaFrachtu;
     private int userID;
     public NoweZlecenie(krajRepozytorium KrajRepozytorium,uzytkownicyRepozytorium UzytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,
                         int userID,przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,samochodRepozytorium SamochodRepozytorium,
-                        towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium)
+                        towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium)
     {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
@@ -67,11 +72,22 @@ public class NoweZlecenie extends JFrame {
         this.SamochodRepozytorium=SamochodRepozytorium;
         this.TowarRepozytorium=TowarRepozytorium;
         this.ZlecenieRepozytorium=ZlecenieRepozytorium;
+        this.WalutaRepozytorium=WalutaRepozytorium;
         PanelZachodni=StworzPanelZachodni();
         PanelPolnocny=StworzPanelPolnocny();
         PanelCentralny=StworzPanelCentralny();
+        PanelCentralny1=StworzPanelDodawaniaInformacjiDoZlecenia();
+
+        zakladka1=new JTabbedPane();
+        zakladka2=new JTabbedPane();
+        zakladka1.addTab("Dodaj zlecenie",StworzPanelCentralny());
+        zakladka1.addTab("Warunku zlecenia",StworzPanelDodawaniaInformacjiDoZlecenia());
 
         this.add(PanelCentralny, BorderLayout.CENTER);
+        add(zakladka1,BorderLayout.CENTER);
+        zakladka1.addChangeListener(e -> {
+
+        });
         SprawdzWykonawceNaPoczatku();
         tZleceniodawca.setEditable(false);
     }
@@ -89,8 +105,15 @@ public class NoweZlecenie extends JFrame {
             Pobierz();
             SprawdzCzyWszystkoWypelnione();
         });
+        ImageIcon Wyjdz=metody.StworzObrazIcone("wyjdz.jpg");
+        ImageIcon Wyjdz1=metody.PrzeskalujObraz(Wyjdz,20,20);
+        bWyjdz=metody.StworzPrzyciskzObrazemzTekstemObok(bWyjdz,"Wyjdź",Wyjdz1,100,20);
+        bWyjdz.addActionListener(e -> {
+            dispose();
+        });
 
         panel.add(bZapisz);
+        panel.add(bWyjdz);
         add(panel,BorderLayout.WEST);
         return panel;
     }
@@ -102,6 +125,27 @@ public class NoweZlecenie extends JFrame {
         add(panel, BorderLayout.NORTH);
         return panel;
     }
+    public JPanel StworzPanelDodawaniaInformacjiDoZlecenia()
+    {
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.GRAY);
+        panel.setLayout(null);
+
+        JLabel lDodajWarunkuZlecenia;
+        aWarunkiZlecenia=new LimitowanyTextArea(1000);
+        lDodajWarunkuZlecenia=new JLabel();
+
+        metody.StworzNapisPanel(lDodajWarunkuZlecenia,"Dodaj warunku zlecenia",20,20,150,20,panel);
+       aWarunkiZlecenia.setBounds(20,50,300,200);
+        aWarunkiZlecenia.setWrapStyleWord(true);
+        aWarunkiZlecenia.setLineWrap(true);
+        aWarunkiZlecenia.setCaretPosition(0);
+
+
+
+        panel.add(aWarunkiZlecenia);
+        return panel;
+    }
     public JPanel StworzPanelCentralny()
     {
         JPanel panel = new JPanel();
@@ -111,7 +155,8 @@ public class NoweZlecenie extends JFrame {
         JLabel lTransport,lZleceniodawca,lNumerZlecenia,lDataZaladunku,lMiejscowoscZaladunku,lKodPocztowyZaladunku,lZaladunek,
         lFirmaZaladunku,lPrzewoznik,lTowar,lRodzaj,lIlosc,lWaga,lGodzinaZaladunku,lRodzajSamochodu,lKierowca,lNumeryRejestracyjne,
         lRozladunek,lDataRozladunku,lGodzinaRozladunku,lMiejscowoscRozladunku,lKodPocztowyRozladunku,lFirmaRozladunku,lKilogramy,
-                lGodzinaZaladunku1,lKrajZaladunku,lKrajRozladunku,lGodzinaRozladunku1;
+                lGodzinaZaladunku1,lKrajZaladunku,lKrajRozladunku,lGodzinaRozladunku1,lCena,lKwotaFrachtu,lKwotaZlecenia,lUlicaZaladunku,
+        lUlicaRozladunku;
 
 
 
@@ -144,6 +189,11 @@ public class NoweZlecenie extends JFrame {
         lKrajZaladunku=new JLabel();
         lKrajRozladunku=new JLabel();
         lGodzinaZaladunku1=new JLabel();
+        lCena=new JLabel();
+        lKwotaFrachtu=new JLabel();
+        lKwotaZlecenia=new JLabel();
+        lUlicaZaladunku=new JLabel();
+        lUlicaRozladunku=new JLabel();
         DataZaladunku=new JDateChooser();
         tZleceniodawca=new LimitowanyText(20,false);
         tNumerZlecenia=new LimitowanyText(30,false);
@@ -151,6 +201,7 @@ public class NoweZlecenie extends JFrame {
         cRodzajTowaru=new JComboBox();
         cKrajZaladunku=new JComboBox();
         cKrajRozladunku=new JComboBox();
+        cWaluta=new JComboBox();
         tIlosc=new LimitowanyText(5,true);
         tWaga=new LimitowanyText(5,true);
         tGodzinaZaladunku=new LimitowanyText(2,true);
@@ -172,7 +223,11 @@ public class NoweZlecenie extends JFrame {
         aFirmaRozladunku=new LimitowanyTextArea(150);
         bDodajZleceniodawce=new JButton();
         bDodajPrzewoznika=new JButton();
-
+        tKwotaFrachtu=new LimitowanyText(7,true);
+        tKwotaZlecenia= new LimitowanyText(7,true);
+        tKwotaZlecenia.setEditable(false);
+        tUlicaZaladunku=new LimitowanyText(40,false);
+        tUlicaRozladunku=new LimitowanyText(50,false);
         ImageIcon Plus=metody.StworzObrazIcone("plus.jpg");
         ImageIcon Plus1=metody.PrzeskalujObraz(Plus,20,20);
         bDodajZleceniodawce=metody.StworzPrzyciskzObrazembezTekstuzWyboremUmiejscowienia(Plus1,290,40,20,20,panel);
@@ -196,6 +251,7 @@ public class NoweZlecenie extends JFrame {
        metody.StworzNapisPanel(lNumerZlecenia,"Numer zlecenia",10,70,100,20,panel);
        metody.StworzNapisPanel(lTowar,"Towar",10,180,100,20,panel);
         lTowar.setFont(lTowar.getFont().deriveFont(Font.BOLD));
+
         metody.StworzNapisPanel(lRodzaj,"Rodzaj",10,210,100,20,panel);
         metody.StworzNapisPanel(lIlosc,"Ilość",10,240,100,20,panel);
         metody.StworzNapisPanel(lWaga,"Waga",140,240,100,20,panel);
@@ -206,12 +262,18 @@ public class NoweZlecenie extends JFrame {
        metody.StworzNapisPanel(lGodzinaZaladunku,"Godzina",240,370,100,20,panel);
        metody.StworzNapisPanel(lGodzinaZaladunku1,":",325,370,100,20,panel);
         metody.StworzNapisPanel(lMiejscowoscZaladunku,"Miejscowość ",10,400,100,20,panel);
+        metody.StworzNapisPanel(lUlicaZaladunku,"Ulica",10,460,100,20,panel);
         metody.StworzNapisPanel(lKodPocztowyZaladunku,"Kod pocztowy",10,430,100,20,panel);
-        metody.StworzNapisPanel(lFirmaZaladunku,"Firma",10,460,100,20,panel);
+        metody.StworzNapisPanel(lFirmaZaladunku,"Firma",10,490,100,20,panel);
         metody.StworzNapisPanel(lPrzewoznik,"Przewoźnik",600,10,100,20,panel);
         metody.StworzNapisPanel(lRodzajSamochodu,"Rodzaj samochodu",600,40,140,20,panel);
         metody.StworzNapisPanel(lKierowca,"Kierowca",600,70,100,20,panel);
         metody.StworzNapisPanel(lNumeryRejestracyjne,"Numery rejestracyjne",600,100,150,20,panel);
+        metody.StworzNapisPanel(lCena,"Cena",600,180,100,20,panel);
+        lCena.setFont(lCena.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisPanel(lKwotaFrachtu,"Kwota frachtu",600,210,150,20,panel);
+        metody.StworzNapisPanel(lKwotaZlecenia,"Kwota zlecenia",600,240,150,20,panel);
+
         metody.StworzNapisPanel(lRozladunek,"Rozladunek",600,310,100,20,panel);
         lRozladunek.setFont(lRozladunek.getFont().deriveFont(Font.BOLD));
         metody.StworzNapisPanel(lKrajRozladunku,"Kraj",600,340,100,20,panel);
@@ -232,8 +294,10 @@ public class NoweZlecenie extends JFrame {
         tDataRozladunku.setEditable(false);
         metody.StworzNapisPanel(lGodzinaRozladunku,"Godzina",840,370,100,20,panel);
         metody.StworzNapisPanel(lMiejscowoscRozladunku,"Miejscowosc",600,400,100,20,panel);
+
         metody.StworzNapisPanel(lKodPocztowyRozladunku,"Kod pocztowy",600,430,100,20,panel);
-        metody.StworzNapisPanel(lFirmaRozladunku,"Firma",600,460,100,20,panel);
+        metody.StworzNapisPanel(lUlicaRozladunku,"Ulica",600,460,100,20,panel);
+        metody.StworzNapisPanel(lFirmaRozladunku,"Firma",600,490,100,20,panel);
         metody.StworzNapisPanel(lKilogramy,"Kg",255,240,20,20,panel);
         cZlecenie.setBounds(120,10,160,20);
         DodajDaneWykonawcaJComboBoxa(cZlecenie);
@@ -262,7 +326,8 @@ public class NoweZlecenie extends JFrame {
         tDataZaladunku.setEditable(false);
         metody.StworzLimitowanyText(tMiejscoscZaladunku,100,400,150,20,panel);
         metody.StworzLimitowanyText(tKodPocztowy,100,430,100,20,panel);
-        aFirmaZaladunku.setBounds(100,460,250,70);
+        metody.StworzLimitowanyText(tUlicaZaladunku,100,460,250,20,panel);
+        aFirmaZaladunku.setBounds(100,490,250,70);
         aFirmaZaladunku.setWrapStyleWord(true);
         aFirmaZaladunku.setLineWrap(true);
         aFirmaZaladunku.setCaretPosition(0);
@@ -271,12 +336,17 @@ public class NoweZlecenie extends JFrame {
         DodajDaneSamochodJComboBoxa(cRodzajSamochodu);
         metody.StworzLimitowanyText(tKierowca,720,70,180,20,panel);
         metody.StworzLimitowanyText(tNumeryRejestracyjne,720,100,150,20,panel);
+        metody.StworzLimitowanyText(tKwotaFrachtu,720,210,100,20,panel);
+        cWaluta.setBounds(830,210,70,20);
+        DodajDaneWalutaJCoomboBoxa(cWaluta);
+        metody.StworzLimitowanyText(tKwotaZlecenia,720,240,100,20,panel);
         metody.StworzLimitowanyText(tGodzinaRozladunku,890,370,30,20,panel);
         metody.StworzNapisPanel(lGodzinaRozladunku1,":",925,370,100,20,panel);
         metody.StworzLimitowanyText(tGodzinaRozladunku1,932,370,30,20,panel);
         metody.StworzLimitowanyText(tMiastoRozladunku,700,400,150,20,panel);
         metody.StworzLimitowanyText(tKodPocztowyRozladunku,700,430,100,20,panel);
-        aFirmaRozladunku.setBounds(700,460,250,70);
+        metody.StworzLimitowanyText(tUlicaRozladunku,700,460,250,20,panel);
+        aFirmaRozladunku.setBounds(700,490,250,70);
         aFirmaRozladunku.setWrapStyleWord(true);
         aFirmaRozladunku.setLineWrap(true);
         aFirmaRozladunku.setCaretPosition(0);
@@ -291,6 +361,8 @@ public class NoweZlecenie extends JFrame {
         panel.add(DataRozladunku);
         panel.add(tDataRozladunku);
         panel.add(aFirmaRozladunku);
+        panel.add(cWaluta);
+
         return panel;
     }
 
@@ -340,6 +412,16 @@ public class NoweZlecenie extends JFrame {
             comboBox.addItem(towar.getNazwa());
         }
     }
+
+    public void DodajDaneWalutaJCoomboBoxa(JComboBox comboBox)
+    {
+        List<String> walutaList=WalutaRepozytorium.findSkrot();
+        comboBox.removeAllItems();
+        for(String skrot:walutaList)
+        {
+            comboBox.addItem(skrot);
+        }
+    }
     public void SprawdzWykonawce(JComboBox comboBox)
     {
         comboBox.addActionListener(new ActionListener() {
@@ -353,6 +435,7 @@ public class NoweZlecenie extends JFrame {
                     tPrzewzonik.setText(NazwaFirmy);
                     bDodajPrzewoznika.setEnabled(false);
                     sTransport=wybranyElement.toString().trim();
+                    tKwotaZlecenia.setEditable(false);
                 }
                 else if(wybranyElement!=null&&!wybranyElement.toString().equals("Wlasny transport"))
                 {
@@ -361,6 +444,7 @@ public class NoweZlecenie extends JFrame {
                     tPrzewzonik.setText("");
                     bDodajPrzewoznika.setEnabled(true);
                     sTransport=wybranyElement.toString().trim();
+                    tKwotaZlecenia.setEditable(true);
                 }
             }
         });
@@ -391,6 +475,7 @@ public class NoweZlecenie extends JFrame {
         sZleceniodawca=tZleceniodawca.getText().trim();
         sNumerZlecenia=tNumerZlecenia.getText().trim();
         sTowarRodzaj=cRodzajTowaru.getSelectedItem().toString();
+        sWaluta=cWaluta.getSelectedItem().toString();
         sIlosc=tIlosc.getText().trim();
         if(!sIlosc.isEmpty())
         {
@@ -420,7 +505,16 @@ public class NoweZlecenie extends JFrame {
         sMiejscowoscRozladunku=tMiastoRozladunku.getText().trim();
         sKodPocztowyRozladunku=tKodPocztowyRozladunku.getText().trim();
         sFirmaRozladunku=aFirmaRozladunku.getText().trim();
-
+        sUlicaZaladunku=tUlicaZaladunku.getText().trim();
+        sUlicaRozladunku=tUlicaRozladunku.getText().trim();
+        if(!tKwotaFrachtu.getText().trim().isEmpty()) {
+            sKwotaFrachtu = tKwotaFrachtu.getText().trim();
+            dKwotaFrachtu=Double.parseDouble(sKwotaFrachtu);
+        }
+        if(!tKwotaZlecenia.getText().isEmpty()) {
+                sKwotaZlecenia = tKwotaZlecenia.getText().trim();
+                dKwotaZlecenia = Double.parseDouble(sKwotaZlecenia);
+        }
 
 
 
@@ -441,18 +535,10 @@ public class NoweZlecenie extends JFrame {
        }
        else if(DataZaladunku1.isEmpty())
        {
-           metody.WyswietlKomunikatoBledzie("Nie wybrałeś daty !");
+           metody.WyswietlKomunikatoBledzie("Nie wybrałeś daty załadunku!");
        }
-       if(sGodzinaZaladunku.isEmpty())
-       {
-           tGodzinaZaladunku.setText("00");
-           sGodzinaZaladunku=tGodzinaZaladunku.getText().trim();
-       }
-        if(sGodzinaZaladunku1.isEmpty())
-       {
-           tGodzinaZaladunku1.setText("00");
-           sGodzinaZaladunku1=tGodzinaZaladunku1.getText().trim();
-       }
+
+
        else if(sMiejscowoscZaladunku.isEmpty())
        {
            metody.WyswietlKomunikatoBledzie("Nie wpisałeś miasta załadunku");
@@ -461,6 +547,10 @@ public class NoweZlecenie extends JFrame {
        {
            metody.WyswietlKomunikatoBledzie("Nie wpisałeś kodu pocztowego załadunku");
        }
+       else if(sUlicaZaladunku.isEmpty())
+        {
+            metody.WyswietlKomunikatoBledzie("Nie wpisałeś ulicy załadunku");
+        }
        else if(sFirmaZaladunku.isEmpty())
        {
            metody.WyswietlKomunikatoBledzie("Nie wpisałęś firmy załadunku !");
@@ -469,21 +559,22 @@ public class NoweZlecenie extends JFrame {
        {
            metody.WyswietlKomunikatoBledzie("Nie wybrałeś przewoźnika !");
        }
+
+        else if(tKwotaFrachtu.getText().trim().isEmpty())
+        {
+            metody.WyswietlKomunikatoBledzie("Nie wpisałeś kwoty frachtu");
+        }
+        else if(tKwotaZlecenia.isEditable()&&sKwotaZlecenia==null)
+        {
+
+            metody.WyswietlKomunikatoBledzie("Nie wpisałeś kwoty zlecenia");
+
+        }
        else if(DataRozladunku1.isEmpty())
        {
            metody.WyswietlKomunikatoBledzie("Nie wybrałeś daty rozładunku !");
        }
-       if(sGodzinaRozladunku.isEmpty())
-       {
-           tGodzinaRozladunku.setText("00");
-           sGodzinaRozladunku=tGodzinaRozladunku.getText().trim();
-       }
-       if(sGodzinaRozladunku1.isEmpty())
-       {
-           tGodzinaRozladunku1.setText("00");
-           sGodzinaRozladunku1=tGodzinaRozladunku1.getText().trim();
 
-       }
        else if(sMiejscowoscRozladunku.isEmpty())
        {
            metody.WyswietlKomunikatoBledzie("nie wpisałeś miejscowości rozładunku");
@@ -492,26 +583,56 @@ public class NoweZlecenie extends JFrame {
        {
            metody.WyswietlKomunikatoBledzie("Nie wpisałeś kodu pocztowego rozładunku !");
        }
+       else if(sUlicaRozladunku.isEmpty())
+       {
+           metody.WyswietlKomunikatoBledzie("Nie wpisałeś ulicy rozładunku");
+       }
        else if(sFirmaRozladunku.isEmpty())
        {
            metody.WyswietlKomunikatoBledzie("Nie wpisałeś firmy rozładunku");
        }
+       else if(sGodzinaZaladunku.isEmpty()||sGodzinaZaladunku1.isEmpty()||sGodzinaRozladunku.isEmpty()||sGodzinaRozladunku1.isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, "Nie wpisałeś godzin, pola zostaną uzupełnione zerami");
+            if(sGodzinaZaladunku.isEmpty())
+            {
+                tGodzinaZaladunku.setText("00");
+                sGodzinaZaladunku=tGodzinaZaladunku.getText().trim();
+            }
+            if(sGodzinaZaladunku1.isEmpty())
+            {
+                tGodzinaZaladunku1.setText("00");
+                sGodzinaZaladunku1=tGodzinaZaladunku1.getText().trim();
+            }
+            if(sGodzinaRozladunku.isEmpty())
+            {
+                tGodzinaRozladunku.setText("00");
+                sGodzinaRozladunku=tGodzinaRozladunku.getText().trim();
+            }
+             if(sGodzinaRozladunku1.isEmpty())
+            {
+                tGodzinaRozladunku1.setText("00");
+                sGodzinaRozladunku1=tGodzinaRozladunku1.getText().trim();
+            }
+
+        }
+
        else
        {
            JOptionPane.showMessageDialog(this, "Dodano nowe zlecenie");
            DodajDdBazyDanych(sTransport,sZleceniodawca,sNumerZlecenia,sTowarRodzaj,iIlosc,iWaga,sKrajZaladunku,DataZaladunku1,sMiejscowoscZaladunku,
-                   sKodPocztowyZaladunku,sFirmaZaladunku,sPrzewoznik,sRodzajSamochodu,sKierowca,sNumerRejestracyjny,sKrajRozladunku,DataRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,
-                   sFirmaRozladunku,NazwaFirmy,IdFirmy,NazwaUzytkownika);
+                   sKodPocztowyZaladunku,sUlicaZaladunku,sFirmaZaladunku,sPrzewoznik,sRodzajSamochodu,sKierowca,sNumerRejestracyjny,sKrajRozladunku,DataRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,sUlicaRozladunku,
+                   sFirmaRozladunku,dKwotaFrachtu,dKwotaZlecenia,sWaluta,NazwaFirmy,IdFirmy,NazwaUzytkownika);
            dispose();
        }
     }
     public void DodajDdBazyDanych(String wykonawca,String zleceniodawa,String numer_zlecenia,String rodzaj_towaru,int ilosc,int waga,String kraj_zaladunku,String data_zaladunku,
-                                  String miejscowosc_zaladunku,String kod_pocztowy_zaladunku,String firma_zaladunek,String przewoznik,String samochod,String kierowca,String numery_rejestracyjne,
-                                  String kraj_rozladunku,String data_rozladunku,String miejscowosc_rozladunku,String kod_pocztowy_rozladunku,String firma_rozladunek, String nazwa_firmy,
+                                  String miejscowosc_zaladunku,String kod_pocztowy_zaladunku,String ulicaZaladunku,String firma_zaladunek,String przewoznik,String samochod,String kierowca,String numery_rejestracyjne,
+                                  String kraj_rozladunku,String data_rozladunku,String miejscowosc_rozladunku,String kod_pocztowy_rozladunku,String ulicaRozladunku, String firma_rozladunek, Double kwotaFrachtu,Double kwotaZlecenia,String waluta, String nazwa_firmy,
                                   int id_firmy,String nazwa_uzytkownika)
     {
-        zlecenie Zlecenie=new zlecenie(wykonawca,zleceniodawa,numer_zlecenia,rodzaj_towaru,ilosc,waga,kraj_zaladunku,data_zaladunku,miejscowosc_zaladunku,kod_pocztowy_zaladunku,firma_zaladunek,
-                przewoznik,samochod,kierowca,numery_rejestracyjne,kraj_rozladunku,data_rozladunku,miejscowosc_rozladunku,kod_pocztowy_rozladunku,firma_rozladunek,nazwa_firmy,id_firmy,nazwa_uzytkownika);
+        zlecenie Zlecenie=new zlecenie(wykonawca,zleceniodawa,numer_zlecenia,rodzaj_towaru,ilosc,waga,kraj_zaladunku,data_zaladunku,miejscowosc_zaladunku,kod_pocztowy_zaladunku,ulicaZaladunku,firma_zaladunek,
+                przewoznik,samochod,kierowca,numery_rejestracyjne,kraj_rozladunku,data_rozladunku,miejscowosc_rozladunku,kod_pocztowy_rozladunku,ulicaRozladunku,firma_rozladunek,kwotaFrachtu,kwotaZlecenia,waluta, nazwa_firmy,id_firmy,nazwa_uzytkownika);
 
         ZlecenieRepozytorium.save(Zlecenie);
     }

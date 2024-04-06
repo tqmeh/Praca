@@ -23,13 +23,14 @@ public class Zlecenie extends JFrame {
     samochodRepozytorium SamochodRepozytorium;
     towarRepozytorium TowarRepozytorium;
     zlecenieRepozytorium ZlecenieRepozytorium;
+    walutaRepozytorium WalutaRepozytorium;
     private int userID;
     int IdFirmy;
     DefaultTableModel model;
     JTable table;
     public Zlecenie(krajRepozytorium KrajRepozytorium, uzytkownicyRepozytorium UytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,
                     int userID,przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,samochodRepozytorium SamochodRepozytorium,
-                    towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium)
+                    towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium)
     {
         this.KrajRepozytorium=KrajRepozytorium;
         this.UzytkownicyRepozytorium=UytkownicyRepozytorium;
@@ -39,6 +40,7 @@ public class Zlecenie extends JFrame {
         this.SamochodRepozytorium=SamochodRepozytorium;
         this.TowarRepozytorium=TowarRepozytorium;
         this.ZlecenieRepozytorium=ZlecenieRepozytorium;
+        this.WalutaRepozytorium=WalutaRepozytorium;
         IdFirmy=UzytkownicyRepozytorium.findFirmaIdByUserId(userID);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
@@ -53,7 +55,7 @@ public class Zlecenie extends JFrame {
         bDodaj=metody.StworzPrzyciskzObrazemzTekstemObok(bDodaj,"Dodaj",Plus1,100,20);
         bDodaj.addActionListener(e -> {
             NoweZlecenie noweZlecenie=new NoweZlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID,PrzewoznikRepozytorium,WykonawcaRepozytorium,
-                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium);
+                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium);
             noweZlecenie.setVisible(true);
         });
         ImageIcon Usun=metody.StworzObrazIcone("Minus.jpg");
@@ -75,7 +77,7 @@ public class Zlecenie extends JFrame {
     public void WyswietlTabele()
     {
         List<Encje.zlecenie> zlecenieList=ZlecenieRepozytorium.findCompanyByFirmaId(IdFirmy);
-        Object[][] dane=new Object[zlecenieList.size()][12];
+        Object[][] dane=new Object[zlecenieList.size()][15];
         for(int i=0;i<zlecenieList.size();i++)
         {
             zlecenie zlecenie1=zlecenieList.get(i);
@@ -91,10 +93,13 @@ public class Zlecenie extends JFrame {
             dane[i][9]=zlecenie1.getKraj_rozladunku();
             dane[i][10]=zlecenie1.getData_rozladunku();
             dane[i][11]=zlecenie1.getMiejscowosc_rozladunku();
+            dane[i][12]=zlecenie1.getKwota_frachtu();
+            dane[i][13]=zlecenie1.getKwota_zlecenia();
+            dane[i][14]=zlecenie1.getWaluta();
         }
         String[] NazwyKolumn={
                 "ID","Wykonawca","ZLeceniodawca","Rodzaj towaru","Ilosc","Waga","KrajZaladunku","Data załadunku","Miejscowość załadunku",
-                "Kraj rozładunku","Data rozładunku","Miejscowość rozładunku"
+                "Kraj rozładunku","Data rozładunku","Miejscowość rozładunku","Kwota frachtu","Kwota zlecenia","Waluta"
         };
         model = new DefaultTableModel(dane, NazwyKolumn);
         table = new JTable();
