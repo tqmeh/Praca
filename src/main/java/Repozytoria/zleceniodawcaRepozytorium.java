@@ -11,4 +11,6 @@ public interface zleceniodawcaRepozytorium extends JpaRepository<Encje.zleceniod
     void deleteById(Integer id);
 @Query("SELECT u FROM zleceniodawca u WHERE u.id_firmy = :firmaId")
     List<Encje.zleceniodawca> findCompanyByFirmaId(@Param("firmaId")Integer firmaId);
+
+
 }

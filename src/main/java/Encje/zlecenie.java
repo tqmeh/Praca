@@ -39,13 +39,14 @@ public class zlecenie {
     private String nazwa_firmy;
     private int id_firmy;
     private String nazwa_uzytkownika;
+    private String warunku_zlecenia;
 
     public zlecenie()
     {
 
     }
 
-    public zlecenie(String wykonawca, String zlecemiodawca_nazwa_skrocona, String numer_zlecenia, String rodzaj_towaru, int ilosc, int waga, String kraj_zaladunku, String data_zaladunku, String miejscowosc_zaladunku, String kod_pocztowy_zaladunku,String ulica_zaladunku, String firma_zaladunek, String przewoznik_nazwa_skrocona, String rodzaj_samochodu, String kierowca, String numery_rejestracyjne, String kraj_rozladunku, String data_rozladunku, String miejscowosc_rozladunku, String kod_pocztowy_rozladunku,String ulica_rozladunku, String firma_rozladunek,Double kwota_frachtu,Double kwota_zlecenia, String waluta, String nazwa_firmy, int id_firmy, String nazwa_uzytkownika) {
+    public zlecenie(String wykonawca, String zlecemiodawca_nazwa_skrocona, String numer_zlecenia, String rodzaj_towaru, int ilosc, int waga, String kraj_zaladunku, String data_zaladunku, String miejscowosc_zaladunku, String kod_pocztowy_zaladunku,String ulica_zaladunku, String firma_zaladunek, String przewoznik_nazwa_skrocona, String rodzaj_samochodu, String kierowca, String numery_rejestracyjne, String kraj_rozladunku, String data_rozladunku, String miejscowosc_rozladunku, String kod_pocztowy_rozladunku,String ulica_rozladunku, String firma_rozladunek,Double kwota_frachtu,Double kwota_zlecenia, String waluta, String warunku_zlecenia, String nazwa_firmy, int id_firmy, String nazwa_uzytkownika) {
         this.wykonawca = wykonawca;
         this.zlecemiodawca_nazwa_skrocona = zlecemiodawca_nazwa_skrocona;
         this.numer_zlecenia = numer_zlecenia;
@@ -74,6 +75,7 @@ public class zlecenie {
         this.kwota_frachtu=kwota_frachtu;
         this.kwota_zlecenia=kwota_zlecenia;
         this.waluta=waluta;
+        this.warunku_zlecenia=warunku_zlecenia;
     }
 
     public int getId() {
@@ -306,5 +308,13 @@ public class zlecenie {
 
     public void setWaluta(String waluta) {
         this.waluta = waluta;
+    }
+
+    public String getWarunku_zlecenia() {
+        return warunku_zlecenia;
+    }
+
+    public void setWarunku_zlecenia(String warunku_zlecenia) {
+        this.warunku_zlecenia = warunku_zlecenia;
     }
 }

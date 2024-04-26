@@ -44,6 +44,7 @@ public class Logowanie extends JFrame {
     towarRepozytorium TowarRepozytorium;
     zlecenieRepozytorium ZlecenieRepozytorium;
 
+    firmaRepozytorium FirmaRepozytorium;
     walutaRepozytorium WalutaRepozytorium;
 
 
@@ -51,7 +52,8 @@ public class Logowanie extends JFrame {
 
     public Logowanie(Repozytoria.uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
                      zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,
-                     samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium) {
+                     samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium,
+                     firmaRepozytorium FirmaRepozytorium) {
 
         setSize(400, 350);
         setLocationRelativeTo(null);
@@ -67,6 +69,7 @@ public class Logowanie extends JFrame {
         this.TowarRepozytorium=TowarRepozytorium;
         this.ZlecenieRepozytorium=ZlecenieRepozytorium;
         this.WalutaRepozytorium=WalutaRepozytorium;
+        this.FirmaRepozytorium=FirmaRepozytorium;
 
         metody.StworzNapis(this, lLogin, "Login", 10, 10, 100, 20);
         metody.StworzNapis(this, lHaslo, "Hasło", 10, 40, 100, 20);
@@ -111,7 +114,7 @@ public class Logowanie extends JFrame {
                         }
                         else {
                             OknoGlowneProgramu oknoGlowneProgramu=new OknoGlowneProgramu(user.getId(),uzytkownicyRepozytorium,javaMailSender,KrajRepozytorium,ZleceniodawcaRepozytorium,PrzewoznikRepozytorium,WykonawcaRepozytorium,
-                                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium);
+                                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium,FirmaRepozytorium);
                             oknoGlowneProgramu.setVisible(true);
                         }
                     }

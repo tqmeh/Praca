@@ -44,7 +44,7 @@ public class NoweZlecenie extends JFrame {
     String sZleceniodawca,sNumerZlecenia,sTowarRodzaj,sIlosc,sWaga,sKrajZaladunku,sGodzinaZaladunku,sGodzinaZaladunku1,
     sMiejscowoscZaladunku,sKodPocztowyZaladunku,sFirmaZaladunku,sPrzewoznik,sRodzajSamochodu,sKierowca,sNumerRejestracyjny,sKrajRozladunku,
     sGodzinaRozladunku,sGodzinaRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,sFirmaRozladunku,NazwaFirmy,NazwaUzytkownika,
-    sWaluta,sUlicaZaladunku,sUlicaRozladunku,sKwotaFrachtu,sKwotaZlecenia;
+    sWaluta,sUlicaZaladunku,sUlicaRozladunku,sKwotaFrachtu,sKwotaZlecenia,sWarunkuZlecenia;
     //Dane do wysylki do bazydanych
     String DataRozladunku1,DataZaladunku1,sTransport;// nie zapomniec o sTransport wybor z cWlasnyTransport
     int iIlosc,iWaga,IdFirmy;
@@ -60,6 +60,7 @@ public class NoweZlecenie extends JFrame {
     {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
+
         NazwaFirmy=UzytkownicyRepozytorium.findNazwaFirmyByUserId(userID);
         NazwaUzytkownika=UzytkownicyRepozytorium.findNazwaUzytkownikaById(userID);
         IdFirmy=UzytkownicyRepozytorium.findFirmaIdByUserId(userID);
@@ -132,11 +133,11 @@ public class NoweZlecenie extends JFrame {
         panel.setLayout(null);
 
         JLabel lDodajWarunkuZlecenia;
-        aWarunkiZlecenia=new LimitowanyTextArea(1000);
+        aWarunkiZlecenia=new LimitowanyTextArea(500);
         lDodajWarunkuZlecenia=new JLabel();
 
-        metody.StworzNapisPanel(lDodajWarunkuZlecenia,"Dodaj warunku zlecenia",20,20,150,20,panel);
-       aWarunkiZlecenia.setBounds(20,50,300,200);
+        metody.StworzNapisPanel(lDodajWarunkuZlecenia,"Dodaj warunki zlecenia",20,20,150,20,panel);
+       aWarunkiZlecenia.setBounds(20,50,600,200);
         aWarunkiZlecenia.setWrapStyleWord(true);
         aWarunkiZlecenia.setLineWrap(true);
         aWarunkiZlecenia.setCaretPosition(0);
@@ -477,6 +478,7 @@ public class NoweZlecenie extends JFrame {
         sTowarRodzaj=cRodzajTowaru.getSelectedItem().toString();
         sWaluta=cWaluta.getSelectedItem().toString();
         sIlosc=tIlosc.getText().trim();
+        sWarunkuZlecenia=aWarunkiZlecenia.getText().trim();
         if(!sIlosc.isEmpty())
         {
             iIlosc=Integer.parseInt(sIlosc);
@@ -622,17 +624,17 @@ public class NoweZlecenie extends JFrame {
            JOptionPane.showMessageDialog(this, "Dodano nowe zlecenie");
            DodajDdBazyDanych(sTransport,sZleceniodawca,sNumerZlecenia,sTowarRodzaj,iIlosc,iWaga,sKrajZaladunku,DataZaladunku1,sMiejscowoscZaladunku,
                    sKodPocztowyZaladunku,sUlicaZaladunku,sFirmaZaladunku,sPrzewoznik,sRodzajSamochodu,sKierowca,sNumerRejestracyjny,sKrajRozladunku,DataRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,sUlicaRozladunku,
-                   sFirmaRozladunku,dKwotaFrachtu,dKwotaZlecenia,sWaluta,NazwaFirmy,IdFirmy,NazwaUzytkownika);
+                   sFirmaRozladunku,dKwotaFrachtu,dKwotaZlecenia,sWaluta,sWarunkuZlecenia,NazwaFirmy,IdFirmy,NazwaUzytkownika);
            dispose();
        }
     }
     public void DodajDdBazyDanych(String wykonawca,String zleceniodawa,String numer_zlecenia,String rodzaj_towaru,int ilosc,int waga,String kraj_zaladunku,String data_zaladunku,
                                   String miejscowosc_zaladunku,String kod_pocztowy_zaladunku,String ulicaZaladunku,String firma_zaladunek,String przewoznik,String samochod,String kierowca,String numery_rejestracyjne,
-                                  String kraj_rozladunku,String data_rozladunku,String miejscowosc_rozladunku,String kod_pocztowy_rozladunku,String ulicaRozladunku, String firma_rozladunek, Double kwotaFrachtu,Double kwotaZlecenia,String waluta, String nazwa_firmy,
+                                  String kraj_rozladunku,String data_rozladunku,String miejscowosc_rozladunku,String kod_pocztowy_rozladunku,String ulicaRozladunku, String firma_rozladunek, Double kwotaFrachtu,Double kwotaZlecenia,String waluta, String warunku_zlecenia, String nazwa_firmy,
                                   int id_firmy,String nazwa_uzytkownika)
     {
         zlecenie Zlecenie=new zlecenie(wykonawca,zleceniodawa,numer_zlecenia,rodzaj_towaru,ilosc,waga,kraj_zaladunku,data_zaladunku,miejscowosc_zaladunku,kod_pocztowy_zaladunku,ulicaZaladunku,firma_zaladunek,
-                przewoznik,samochod,kierowca,numery_rejestracyjne,kraj_rozladunku,data_rozladunku,miejscowosc_rozladunku,kod_pocztowy_rozladunku,ulicaRozladunku,firma_rozladunek,kwotaFrachtu,kwotaZlecenia,waluta, nazwa_firmy,id_firmy,nazwa_uzytkownika);
+                przewoznik,samochod,kierowca,numery_rejestracyjne,kraj_rozladunku,data_rozladunku,miejscowosc_rozladunku,kod_pocztowy_rozladunku,ulicaRozladunku,firma_rozladunek,kwotaFrachtu,kwotaZlecenia,waluta, warunku_zlecenia, nazwa_firmy,id_firmy,nazwa_uzytkownika);
 
         ZlecenieRepozytorium.save(Zlecenie);
     }
