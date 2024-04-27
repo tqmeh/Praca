@@ -1,22 +1,27 @@
 package PoboczneOkna;
 
+import Encje.fakturykosztowe;
 import Encje.zlecenie;
 import Metody.Metody;
+import Ograniczenia.LimitowanyText;
 import Repozytoria.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.aspectj.bridge.Message;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.transaction.Transactional;
 import javax.xml.crypto.Data;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Zlecenie extends JFrame {
 
@@ -33,13 +38,19 @@ public class Zlecenie extends JFrame {
     firmaRepozytorium FirmaRepozytorium;
     zlecenieRepozytorium ZlecenieRepozytorium;
     walutaRepozytorium WalutaRepozytorium;
+    fakturykosztoweRepozytoirum  FakturyKosztoweRepozytorium;
     private int userID;
     int IdFirmy;
+    int IdZlecenia,idFirmyProgramu;
+    double kwota;
     DefaultTableModel model;
     JTable table;
+    String sNazwafirmy,sUlica,sDom,sMieszkanie,sKodPocztowy,sMiastp,sNip,sRegon,sKwota,sKontoPLN,sKontoEuro,sIban,sSwift,sNumerFaktury,WalutaZLecenia,
+            nazwaFirmyProgramu;
     public Zlecenie(krajRepozytorium KrajRepozytorium, uzytkownicyRepozytorium UytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,
                     int userID,przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,samochodRepozytorium SamochodRepozytorium,
-                    towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium,firmaRepozytorium FirmaRepozytorium)
+                    towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium,firmaRepozytorium FirmaRepozytorium,
+                    fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium)
     {
         this.KrajRepozytorium=KrajRepozytorium;
         this.UzytkownicyRepozytorium=UytkownicyRepozytorium;
@@ -51,6 +62,7 @@ public class Zlecenie extends JFrame {
         this.ZlecenieRepozytorium=ZlecenieRepozytorium;
         this.WalutaRepozytorium=WalutaRepozytorium;
         this.FirmaRepozytorium=FirmaRepozytorium;
+        this.FakturyKosztoweRepozytorium=FakturyKosztoweRepozytorium;
         IdFirmy=UzytkownicyRepozytorium.findFirmaIdByUserId(userID);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
@@ -335,21 +347,233 @@ public class Zlecenie extends JFrame {
     {
         JDialog jNoweOknoDialogowe=new JDialog();
         jNoweOknoDialogowe.setTitle("Dodaj firmę");
-        jNoweOknoDialogowe.setSize(650,300);
+        jNoweOknoDialogowe.setSize(800,400);
         jNoweOknoDialogowe.setLayout(null);
         jNoweOknoDialogowe.setVisible(true);
         jNoweOknoDialogowe.setLocationRelativeTo(null);
 
         int WybranyWiersz=table.getSelectedRow();
-        int Id = (Integer) table.getValueAt(WybranyWiersz, 0);
-        JLabel lNazwa;
+        IdZlecenia = (Integer) table.getValueAt(WybranyWiersz, 0);
+        String NazwaKrotkaPrzewoznika=ZlecenieRepozytorium.findZleceniobiorcaNazwaKrotkaById(IdZlecenia);
+        int IdPrzewoznika=PrzewoznikRepozytorium.findNazwaPelnaFirmyById(NazwaKrotkaPrzewoznika);
+        String NazwaPelnaPrzewoznika=PrzewoznikRepozytorium.findNazwaPelnaById(IdPrzewoznika);
+        String UlicaPrzewoznika=PrzewoznikRepozytorium.findUlicaById(IdPrzewoznika);
+        String NumerDomuPrzewoznika=PrzewoznikRepozytorium.findNumer_DomuById(IdPrzewoznika);
+        String NumerMieszkaniaPrzewoznika=PrzewoznikRepozytorium.findNumer_MieszkaniaById(IdPrzewoznika);
+        String KodPocztowyPrzewoznika=PrzewoznikRepozytorium.findKod_PocztowyById(IdPrzewoznika);
+        String MiastoPrzewoznika=PrzewoznikRepozytorium.findMiastoById(IdPrzewoznika);
+        String NipPrzewoznika=PrzewoznikRepozytorium.findNipById(IdPrzewoznika);
+        String RegonPrzewoznika=PrzewoznikRepozytorium.findRegonById(IdPrzewoznika);
+        String KwotaZlecenia=ZlecenieRepozytorium.findKwota_ZleceniaId(IdZlecenia);
+         WalutaZLecenia=ZlecenieRepozytorium.findWalutaId(IdZlecenia);
+        String KrajPrzewoznika=PrzewoznikRepozytorium.findKrajId(IdPrzewoznika);
+         nazwaFirmyProgramu=ZlecenieRepozytorium.findNazwaFirmyProgramuId(IdZlecenia);
+         idFirmyProgramu=ZlecenieRepozytorium.findIDFIRMYId(IdZlecenia);
+        if(RegonPrzewoznika.equals("0.0"))
+        {
+            RegonPrzewoznika="";
+        }
+
+
+
+
+        JLabel lFirma,lNazwa,lUlica,lKodPocztowy,lMiasto,lDane,lNip,lRegon,lDaneDoFaktury,lKontoPLN,lKontoEUR,lIban,lSwift,lSlash,
+        lKwota,lWaluta,lNumerFaktury;
+
+        JTextField tFirma,tUlica,tNumerDomu,tNumerMieszkania,tKodPocztowy,tMiasto,tNip,tRegon,tKwota;
+        LimitowanyText tIban,tSwitf,tKontoPLN,tKontoEur,tNumerFaktury;
+        lFirma=new JLabel();
         lNazwa=new JLabel();
-        metody.StworzNapisJDialog(jNoweOknoDialogowe,lNazwa,"Firma",0,0,100,20);
+        lUlica=new JLabel();
+        lKodPocztowy=new JLabel();
+        lMiasto=new JLabel();
+        lDane=new JLabel();
+        lNip=new JLabel();
+        lRegon=new JLabel();
+        lDaneDoFaktury=new JLabel();
+        lKontoPLN=new JLabel();
+        lKontoEUR=new JLabel();
+        lIban=new JLabel();
+        lSwift=new JLabel();
+        lKwota=new JLabel();
+        lSlash=new JLabel();
+        lWaluta=new JLabel();
+        lNumerFaktury=new JLabel();
+        JButton bZapisz;
+
+        tFirma=new JTextField();
+        tUlica=new JTextField();
+        tNumerDomu=new JTextField();
+        tNumerMieszkania=new JTextField();
+        tKodPocztowy=new JTextField();
+        tMiasto=new JTextField();
+        tNip=new JTextField();
+        tRegon=new JTextField();
+        tKwota=new JTextField();
+        tKontoPLN=new LimitowanyText(26,true);
+        tKontoEur=new LimitowanyText(26,true);
+        tIban=new LimitowanyText(20,false);
+        tSwitf=new LimitowanyText(20,false);
+        tNumerFaktury=new LimitowanyText(30,false);
+
+        bZapisz=new JButton();
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lFirma,"Firma",10,10,100,10);
+        lFirma.setFont(lFirma.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lNazwa,"Nazwa",10,40,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lUlica,"Ulica",10,70,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKodPocztowy,"Kod pocztowy",10,100,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lMiasto,"Miasto",10,130,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lDane,"Dane",400,10,100,20);
+        lDane.setFont(lFirma.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lNip,"NIP",400,40,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lRegon,"Regon",400,70,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lDaneDoFaktury,"Dane  faktury",400,100,150,20);
+        lDaneDoFaktury.setFont(lFirma.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKwota,"Kwota",400,130,130,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKontoPLN,"Konto PLN",400,160,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKontoEUR,"Konto EUR",400,190,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lIban,"IBAN",400,220,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lSwift,"Swift",400,250,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lSlash,"/",315,70,20,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lWaluta,"",620,130,30,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lNumerFaktury,"Numer faktury",400,280,100,20);
+
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tFirma,120,40,160,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tUlica,120,70,160,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tNumerDomu,290,70,20,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tNumerMieszkania,325,70,20,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tKodPocztowy,120,100,100,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tMiasto,120,130,160,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tNip,510,40,150,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tRegon,510,70,150,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tKwota,510,130,100,20);
+        metody.StworzLimitowanyTextjDialog(tKontoPLN,510,160,160,20,jNoweOknoDialogowe);
+        metody.StworzLimitowanyTextjDialog(tKontoEur,510,190,160,20,jNoweOknoDialogowe);
+        metody.StworzLimitowanyTextjDialog(tIban,510,220,160,20,jNoweOknoDialogowe);
+        metody.StworzLimitowanyTextjDialog(tSwitf,510,250,160,20,jNoweOknoDialogowe);
+        metody.StworzLimitowanyTextjDialog(tNumerFaktury,510,280,160,20,jNoweOknoDialogowe);
+
+        tFirma.setText(NazwaPelnaPrzewoznika);
+        tUlica.setText(UlicaPrzewoznika);
+        tNumerDomu.setText(NumerDomuPrzewoznika);
+        tNumerMieszkania.setText(NumerMieszkaniaPrzewoznika);
+        tKodPocztowy.setText(KodPocztowyPrzewoznika);
+        tMiasto.setText(MiastoPrzewoznika);
+        tNip.setText(NipPrzewoznika);
+        tRegon.setText(RegonPrzewoznika);
+        tKwota.setText(KwotaZlecenia);
+        lWaluta.setText(WalutaZLecenia);
+
+
+        metody.StworzJButtonJDialog(jNoweOknoDialogowe,bZapisz,"Zapisz",350,330,100,20);
+        bZapisz.addActionListener(e -> {
+
+           sNazwafirmy=pobierz(tFirma);
+            sUlica=pobierz(tUlica);
+            sDom=pobierz(tNumerDomu);
+            sMieszkanie=pobierz(tNumerMieszkania);
+            sKodPocztowy=pobierz(tKodPocztowy);
+            sMiastp=pobierz(tMiasto);
+            sNip=pobierz(tNip);
+            sRegon=pobierz(tRegon);
+            sKwota=pobierz(tKwota);
+            sKontoPLN=pobierz(tKontoPLN);
+            sKontoEuro=pobierz(tKontoEur);
+            sIban=pobierz(tIban);
+            sSwift=pobierz(tSwitf);
+            sNumerFaktury=pobierz(tNumerFaktury);
+
+
+           Sprawdz(WalutaZLecenia,KrajPrzewoznika,sKontoPLN,sKontoEuro,sIban,sSwift,sNumerFaktury,jNoweOknoDialogowe);
+            System.out.println(KrajPrzewoznika);
+
+        });
+        tFirma.setEditable(false);
+        tUlica.setEditable(false);
+        tNumerDomu.setEditable(false);
+        tNumerMieszkania.setEditable(false);
+        tKodPocztowy.setEditable(false);
+        tMiasto.setEditable(false);
+        tNip.setEditable(false);
+        tRegon.setEditable(false);
+        tKwota.setEditable(false);
+
 
 
     }
 
+public String pobierz(JTextField textField)
+{
+    return textField.getText().trim();
+}
+    public void Sprawdz(String Waluta,String Kraj,String PLN,String Euro,String IBAN,String Swift,String cos,JDialog jDialog) {
+       if(Waluta.equals("PLN"))
+       {
+           if(PLN.isEmpty())
+           {
+               metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru konta PLN");
+           }
+           else if(cos.isEmpty())
+           {
+               metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru faktury");
+           }
+           else
+           {
+               kwota=Double.parseDouble(sKwota);
+               Encje.fakturykosztowe Fakturykosztowe=new fakturykosztowe(IdZlecenia,sNazwafirmy,sUlica,sDom,sMieszkanie,sKodPocztowy,sMiastp,sNip,sRegon,kwota,WalutaZLecenia,sKontoPLN,
+                       sKontoEuro,sIban,sSwift,sNumerFaktury,nazwaFirmyProgramu,idFirmyProgramu);
+               FakturyKosztoweRepozytorium.save(Fakturykosztowe);
+               JOptionPane.showMessageDialog(null, "Dodano fakturę kosztową do zlecenia o numerze  "+IdZlecenia);
 
+               Optional<zlecenie>optionalZlecenie=ZlecenieRepozytorium.findById(IdZlecenia);
+               if (optionalZlecenie.isPresent())
+               {
+                   zlecenie zleceniedo=optionalZlecenie.get();
+                   zleceniedo.setNumerfakturykosztowej(sNumerFaktury);
+                   ZlecenieRepozytorium.save(zleceniedo);
+               }
+               jDialog.dispose();
+
+           }
+
+       }
+       else if(!Waluta.equals("PLN"))
+       {
+           if(Kraj.equals("Polska"))
+           {
+               metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru konta PLN");
+           }
+           else if(Euro.isEmpty())
+           {
+               metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru konta w EURO");
+           }
+
+           else if(IBAN.isEmpty())
+           {
+               metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru IBAN");
+           }
+           else if(Swift.isEmpty())
+           {
+               metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru Swift");
+           }
+           else if(cos.isEmpty())
+           {
+               metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru faktury");
+           }
+           else
+           {
+               kwota=Double.parseDouble(sKwota);
+               Encje.fakturykosztowe Fakturykosztowe=new fakturykosztowe(IdZlecenia,sNazwafirmy,sUlica,sDom,sMieszkanie,sKodPocztowy,sMiastp,sNip,sRegon,kwota,WalutaZLecenia,sKontoPLN,
+                       sKontoEuro,sIban,sSwift,sNumerFaktury,nazwaFirmyProgramu,idFirmyProgramu);
+               FakturyKosztoweRepozytorium.save(Fakturykosztowe);
+               JOptionPane.showMessageDialog(null, "Dodano fakturę kosztową do zlecenia o numerze  "+IdZlecenia);
+               jDialog.dispose();
+           }
+       }
+
+
+
+    }
 
 
 }

@@ -2,6 +2,7 @@ package Repozytoria;
 
 import Encje.zlecenie;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -75,5 +76,16 @@ public interface zlecenieRepozytorium extends JpaRepository<Encje.zlecenie,Integ
 
     @Query("SELECT u.wykonawca FROM zlecenie u WHERE u.id =:zlecenieID")
     String findWykonawcaId(@Param("zlecenieID")Integer zlecenieID);
+
+    @Query("SELECT u.nazwa_firmy FROM zlecenie u WHERE u.id =:zlecenieID")
+    String findNazwaFirmyProgramuId(@Param("zlecenieID")Integer zlecenieID);
+
+    @Query("SELECT u.id_firmy FROM zlecenie u WHERE u.id =:zlecenieID")
+    int findIDFIRMYId(@Param("zlecenieID")Integer zlecenieID);
+
+
+
+
+
 
 }

@@ -25,10 +25,12 @@ public class OknoGlowneProgramu extends JFrame {
      zlecenieRepozytorium ZlecenieRepozytorium;
 
      walutaRepozytorium WalutaRepozytorium;
+
+     fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium;
     public OknoGlowneProgramu(int userID, uzytkownicyRepozytorium UzytkownicyRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
                               zleceniodawcaRepozytorium ZleceniodawcaRepozytorium, przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,
                               samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium,
-                              firmaRepozytorium FirmaRepozytorium)
+                              firmaRepozytorium FirmaRepozytorium, fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium)
     {
         this.KrajRepozytorium=KrajRepozytorium;
         this.userID=userID;
@@ -42,6 +44,7 @@ public class OknoGlowneProgramu extends JFrame {
         this.ZlecenieRepozytorium=ZlecenieRepozytorium;
         this.WalutaRepozytorium=WalutaRepozytorium;
         this.FirmaRepozytorium=FirmaRepozytorium;
+        this.FakturyKosztoweRepozytorium=FakturyKosztoweRepozytorium;
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
         JPanel panelPolnocny=new JPanel();
@@ -69,7 +72,7 @@ public class OknoGlowneProgramu extends JFrame {
         });
         bZlecenie.addActionListener(e -> {
             Zlecenie zlecenie=new Zlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID,PrzewoznikRepozytorium,WykonawcaRepozytorium,
-                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium,FirmaRepozytorium);
+                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium,FirmaRepozytorium,FakturyKosztoweRepozytorium);
             zlecenie.setVisible(true);
             System.out.println("Numer Id to "+userID);
         });

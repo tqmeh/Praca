@@ -35,4 +35,10 @@ public interface przewoznikRepozytorium extends JpaRepository<Encje.przewoznik,I
 
     @Query("SELECT u.nip FROM przewoznik u WHERE u.id =:zlecenieId")
     String findNipById(@Param("zlecenieId")Integer zlecenieId);
+
+    @Query("SELECT u.regon FROM przewoznik u WHERE u.id =:zlecenieId")
+    String findRegonById(@Param("zlecenieId")Integer zlecenieId);
+
+    @Query("SELECT u.kraj FROM przewoznik u WHERE u.id =:zlecenieId")
+    String findKrajId(@Param("zlecenieId")Integer zlecenieId);
 }
