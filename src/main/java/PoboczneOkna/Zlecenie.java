@@ -119,7 +119,16 @@ public class Zlecenie extends JFrame {
 
         });
         bGenerujFakture=metody.StworzPrzyciskzObrazemzTekstemObok(bGenerujFakture,"Zapisz fakturę pdf",Usun1,100,20);
-
+        bGenerujFakture.addActionListener(e -> {
+            try {
+                WygenerujFakture();
+            }
+            catch (IOException e12)
+            {
+                e12.printStackTrace();
+            }
+        });
+        bGenerujFakture.setEnabled(false);
 
         bDodajFakture=metody.StworzPrzyciskzObrazemzTekstemObok(bDodajFakture,"Dodaj fakturę",Usun1,200,20);
         bDodajFakture.setEnabled(false);
@@ -197,10 +206,12 @@ public class Zlecenie extends JFrame {
                             bDodajFaktureKosztowa.setEnabled(false);
                             if(numerFaktury!=null) {
                                 bDodajFakture.setEnabled(false);
+                                bGenerujFakture.setEnabled(true);
                             }
                             else
                             {
                                 bDodajFakture.setEnabled(true);
+                                bGenerujFakture.setEnabled(false);
                             }
                         }
                         else
@@ -208,10 +219,12 @@ public class Zlecenie extends JFrame {
 
                             if(numerFaktury!=null) {
                                 bDodajFakture.setEnabled(false);
+                                bGenerujFakture.setEnabled(true);
                             }
                             else
                             {
                                 bDodajFakture.setEnabled(true);
+                                bGenerujFakture.setEnabled(false);
                             }
                             if(numerFakturyKosztowej!=null)
                             {
@@ -248,6 +261,131 @@ public class Zlecenie extends JFrame {
             ZlecenieRepozytorium.deleteById(Id);
             JOptionPane.showMessageDialog(null, "Usunieto zlecenie o  numerze ID "+Id);
 
+        }
+    }
+    public void WygenerujFakture() throws IOException
+    {
+        int WybranyWiersz=table.getSelectedRow();
+        if(WybranyWiersz!=-1){
+            int Id=(Integer) table.getValueAt(WybranyWiersz,0);
+            String ZleceniodawcaNazwaKrotka=ZlecenieRepozytorium.findZlecemiodawcaNazwaKrotkaById(Id);
+            int IdZleceniodawcy= ZleceniodawcaRepozytorium.findNazwaPelnaFirmyById(ZleceniodawcaNazwaKrotka);
+            String numerFaktury=ZlecenieRepozytorium.findNumerFakturyId(Id);
+            String nazwaPelnaZleceniodawcy=ZleceniodawcaRepozytorium.findNazwaPelnaById(IdZleceniodawcy);
+            String UlicaNabywca=ZleceniodawcaRepozytorium.findulicaById(IdZleceniodawcy);
+            String NumerDomuNabywcy=ZleceniodawcaRepozytorium.findNumer_DomuById(IdZleceniodawcy);
+            String NumerMieszkaniaNabywcy=ZleceniodawcaRepozytorium.findNumerMieszkaniaById(IdZleceniodawcy);
+            String KodPocztowyNabywcy=ZleceniodawcaRepozytorium.findKod_PocztowyById(IdZleceniodawcy);
+            String MiastoNabywcy=ZleceniodawcaRepozytorium.findMiastoId(IdZleceniodawcy);
+            String NIPNabywcy=ZleceniodawcaRepozytorium.findNIPById(IdZleceniodawcy);
+            String NazwaPelnaSprzedawcy=FirmaRepozytorium.findnazwaFirmyById(IdFirmy);
+            String RegonNabywcy=ZleceniodawcaRepozytorium.findRegonId(IdZleceniodawcy);
+            String UlicaSprzedawcy=FirmaRepozytorium.findulicaFirmyById(IdFirmy);
+            String NumerDomuSprzedawcy=FirmaRepozytorium.findnumerdomuFirmyById(IdFirmy);
+            String NumerMieszkaniaSprzedawcy=FirmaRepozytorium.findnumermieszkaniaFirmyById(IdFirmy);
+            String KodPocztowySprzedawcy=FirmaRepozytorium.findkodpocztowyFirmyById(IdFirmy);
+            String MiastoSprzedawcy=FirmaRepozytorium.findmiastoFirmyById(IdFirmy);
+            String NIPSprzedawcy=FirmaRepozytorium.findnipFirmyById(IdFirmy);
+            String RegonSprzedawcy=FirmaRepozytorium.findregonFirmyById(IdFirmy);
+            int NumerFakturyId=FakutraRepozytorium.findcostamById(Id);
+            String DataWystawieniaFaktury=FakutraRepozytorium.findDataWystawieniaById(NumerFakturyId);
+            String DataSprzedazyFaktury=FakutraRepozytorium.findDataSprzedazyById(NumerFakturyId);
+            String KwotaNettoFaktury=FakutraRepozytorium.findKwotaNettoById(NumerFakturyId);
+            String KwotaBruttoFaktury=FakutraRepozytorium.findKwotaBruttoById(NumerFakturyId);
+            String Waluta=FakutraRepozytorium.findWalutaById(NumerFakturyId);
+            String KontoPLN=FakutraRepozytorium.findKontoPLNById(NumerFakturyId);
+            String KontroEUR=FakutraRepozytorium.findKontoEURById(NumerFakturyId);
+            String Iban=FakutraRepozytorium.findIBANById(NumerFakturyId);
+            String Swift=FakutraRepozytorium.findSwiftById(NumerFakturyId);
+
+            if(RegonNabywcy.equals("0.0"))
+            {
+                RegonNabywcy="";
+            }
+
+            PDDocument document=new PDDocument();
+            PDPage page=new PDPage();
+            document.addPage(page);
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.COURIER, 12);
+            float x = 50; // Współrzędna x
+            float y = 700; // Współrzędna y
+            float przesuniecieY = -20; // Przesunięcie w dół
+            float przenusiecieX=10;
+            contentStream.newLineAtOffset(240,y);
+            contentStream.showText("Faktura nr "+numerFaktury);
+            contentStream.newLineAtOffset(250,przesuniecieY);
+            contentStream.showText("Oryginal/Kopia");
+            contentStream.newLineAtOffset(-450,przesuniecieY*3);
+            contentStream.showText("Nabywca: ");
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText(nazwaPelnaZleceniodawcy);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText(UlicaNabywca+" "+NumerDomuNabywcy+" "+NumerMieszkaniaNabywcy);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText(KodPocztowyNabywcy+" "+MiastoNabywcy);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText("NIP: "+NIPNabywcy);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText("Regon "+RegonNabywcy);
+            contentStream.newLineAtOffset(350,100);
+            contentStream.showText("Sprzedawca: ");
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText(NazwaPelnaSprzedawcy);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText(UlicaSprzedawcy+" "+NumerDomuSprzedawcy+" "+NumerMieszkaniaSprzedawcy);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText(KodPocztowySprzedawcy+" "+MiastoSprzedawcy);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText("NIP: "+NIPSprzedawcy);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText("Regon: "+RegonSprzedawcy);
+            contentStream.newLineAtOffset(-350,przesuniecieY*4);
+           contentStream.showText("Data wystawienia "+DataWystawieniaFaktury);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText("Data sprzedazy "+DataSprzedazyFaktury);
+            contentStream.newLineAtOffset(0,przesuniecieY*5);
+            contentStream.showText("Kwota netto :");
+            contentStream.newLineAtOffset(180,0);
+            contentStream.showText("Kwota brutto :");
+            contentStream.newLineAtOffset(180,0);
+            contentStream.showText("Waluta :");
+            contentStream.newLineAtOffset(-360,przesuniecieY);
+            contentStream.showText(KwotaNettoFaktury);
+            contentStream.newLineAtOffset(180,0);
+            contentStream.showText(KwotaBruttoFaktury);
+            contentStream.newLineAtOffset(180,0);
+            contentStream.showText(Waluta);
+            contentStream.newLineAtOffset(-360,przesuniecieY*3);
+            contentStream.showText("Konto PLN: "+KontoPLN);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText("Konto EUR: "+KontroEUR);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText("Iban: "+Iban);
+            contentStream.newLineAtOffset(0,przesuniecieY);
+            contentStream.showText("Swift: "+Swift);
+
+
+            contentStream.newLineAtOffset(0,przesuniecieY*5);
+            contentStream.showText("Razem do zaplaty: "+KwotaBruttoFaktury);
+
+
+
+
+
+
+
+
+
+
+
+
+            contentStream.endText();
+            contentStream.close();
+
+            document.save("Numer faktury "+Id+".pdf");
+            document.close();
         }
     }
     public void WezzBazy() throws IOException

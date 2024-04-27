@@ -18,6 +18,9 @@ public interface zleceniodawcaRepozytorium extends JpaRepository<Encje.zleceniod
     @Query("SELECT u.nazwa_pelna FROM zleceniodawca u WHERE u.id =:zleceniodawcaID")
     String findNazwaPelnaById(@Param("zleceniodawcaID")Integer zleceniodawcaID);
 
+    @Query("SELECT u.nazwa_pelna FROM zleceniodawca u WHERE u.nazwa_skrocona =:zleceniodawcaID")
+    String findNazwaPelnaByString(@Param("zleceniodawcaID")String zleceniodawcaID);
+
     @Query("SELECT u.ulica FROM zleceniodawca u WHERE u.id =:zleceniodawcaID")
     String findulicaById(@Param("zleceniodawcaID")Integer zleceniodawcaID);
 
