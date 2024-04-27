@@ -18,6 +18,9 @@ public interface zlecenieRepozytorium extends JpaRepository<Encje.zlecenie,Integ
 
     @Query("SELECT u.przewoznik_nazwa_skrocona FROM zlecenie u WHERE u.id =:zlecenieID")
     String findZleceniobiorcaNazwaKrotkaById(@Param("zlecenieID")Integer zlecenieID);
+
+    @Query("SELECT u.zlecemiodawca_nazwa_skrocona FROM zlecenie u WHERE u.id =:zlecenieID")
+    String findZleceniodawcaById(@Param("zlecenieID")Integer zlecenieID);
     @Query("SELECT u.waga FROM zlecenie u WHERE u.id =:zlecenieID")
     String findWagaById(@Param("zlecenieID")Integer zlecenieID);
 
@@ -82,6 +85,11 @@ public interface zlecenieRepozytorium extends JpaRepository<Encje.zlecenie,Integ
 
     @Query("SELECT u.id_firmy FROM zlecenie u WHERE u.id =:zlecenieID")
     int findIDFIRMYId(@Param("zlecenieID")Integer zlecenieID);
+
+    @Query("SELECT u.numerfaktury FROM zlecenie u WHERE u.id =:zlecenieID")
+    String findNumerFakturyId(@Param("zlecenieID")Integer zlecenieID);
+    @Query("SELECT u.numerfakturykosztowej FROM zlecenie u WHERE u.id =:zlecenieID")
+    String findNumerFakturKosztowejyId(@Param("zlecenieID")Integer zlecenieID);
 
 
 

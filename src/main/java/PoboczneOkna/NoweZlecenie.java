@@ -622,19 +622,20 @@ public class NoweZlecenie extends JFrame {
        else
        {
            String numerfakturykosztowej="";
+           String numerfaktury="";
            JOptionPane.showMessageDialog(this, "Dodano nowe zlecenie");
-           DodajDdBazyDanych(sTransport,numerfakturykosztowej,sZleceniodawca,sNumerZlecenia,sTowarRodzaj,iIlosc,iWaga,sKrajZaladunku,DataZaladunku1,sMiejscowoscZaladunku,
+           DodajDdBazyDanych(sTransport,numerfakturykosztowej,numerfaktury,sZleceniodawca,sNumerZlecenia,sTowarRodzaj,iIlosc,iWaga,sKrajZaladunku,DataZaladunku1,sMiejscowoscZaladunku,
                    sKodPocztowyZaladunku,sUlicaZaladunku,sFirmaZaladunku,sPrzewoznik,sRodzajSamochodu,sKierowca,sNumerRejestracyjny,sKrajRozladunku,DataRozladunku1,sMiejscowoscRozladunku,sKodPocztowyRozladunku,sUlicaRozladunku,
                    sFirmaRozladunku,dKwotaFrachtu,dKwotaZlecenia,sWaluta,sWarunkuZlecenia,NazwaFirmy,IdFirmy,NazwaUzytkownika);
            dispose();
        }
     }
-    public void DodajDdBazyDanych(String wykonawca,String numerfakturykosztowej,String zleceniodawa,String numer_zlecenia,String rodzaj_towaru,int ilosc,int waga,String kraj_zaladunku,String data_zaladunku,
+    public void DodajDdBazyDanych(String wykonawca,String numerfakturykosztowej,String zleceniodawa,String numerfaktury,String numer_zlecenia,String rodzaj_towaru,int ilosc,int waga,String kraj_zaladunku,String data_zaladunku,
                                   String miejscowosc_zaladunku,String kod_pocztowy_zaladunku,String ulicaZaladunku,String firma_zaladunek,String przewoznik,String samochod,String kierowca,String numery_rejestracyjne,
                                   String kraj_rozladunku,String data_rozladunku,String miejscowosc_rozladunku,String kod_pocztowy_rozladunku,String ulicaRozladunku, String firma_rozladunek, Double kwotaFrachtu,Double kwotaZlecenia,String waluta, String warunku_zlecenia, String nazwa_firmy,
                                   int id_firmy,String nazwa_uzytkownika)
     {
-        zlecenie Zlecenie=new zlecenie(wykonawca,numerfakturykosztowej,zleceniodawa,numer_zlecenia,rodzaj_towaru,ilosc,waga,kraj_zaladunku,data_zaladunku,miejscowosc_zaladunku,kod_pocztowy_zaladunku,ulicaZaladunku,firma_zaladunek,
+        zlecenie Zlecenie=new zlecenie(wykonawca,numerfakturykosztowej,numerfaktury,zleceniodawa,numer_zlecenia,rodzaj_towaru,ilosc,waga,kraj_zaladunku,data_zaladunku,miejscowosc_zaladunku,kod_pocztowy_zaladunku,ulicaZaladunku,firma_zaladunek,
                 przewoznik,samochod,kierowca,numery_rejestracyjne,kraj_rozladunku,data_rozladunku,miejscowosc_rozladunku,kod_pocztowy_rozladunku,ulicaRozladunku,firma_rozladunek,kwotaFrachtu,kwotaZlecenia,waluta, warunku_zlecenia, nazwa_firmy,id_firmy,nazwa_uzytkownika);
 
         ZlecenieRepozytorium.save(Zlecenie);

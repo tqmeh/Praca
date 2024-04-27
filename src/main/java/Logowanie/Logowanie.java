@@ -20,6 +20,9 @@ import Repozytoria.towarRepozytorium;
 import Repozytoria.zlecenieRepozytorium;
 import Repozytoria.walutaRepozytorium;
 import Repozytoria.fakturykosztoweRepozytoirum;
+import Repozytoria.numerRepozytorium;
+import Repozytoria.stawkavatRepozytorium;
+import Repozytoria.fakutraRepozytorium;
 import javax.swing.*;
 import java.util.Optional;
 
@@ -47,8 +50,11 @@ public class Logowanie extends JFrame {
 
     firmaRepozytorium FirmaRepozytorium;
     walutaRepozytorium WalutaRepozytorium;
+    stawkavatRepozytorium StawkavatRepozytorium;
 
     fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium;
+    numerRepozytorium NumerRepozytorium;
+    fakutraRepozytorium FakutraRepozytorium;
 
 
     @Autowired
@@ -56,7 +62,8 @@ public class Logowanie extends JFrame {
     public Logowanie(Repozytoria.uzytkownicyRepozytorium uzytkownicyRepozytorium,firmaRepozytorium firmaRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
                      zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,
                      samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium,
-                     firmaRepozytorium FirmaRepozytorium, fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium) {
+                     firmaRepozytorium FirmaRepozytorium, fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium, numerRepozytorium NumerRepozytorium,stawkavatRepozytorium StawkavatRepozytorium,
+                     fakutraRepozytorium FakutraRepozytorium) {
 
         setSize(400, 350);
         setLocationRelativeTo(null);
@@ -74,6 +81,9 @@ public class Logowanie extends JFrame {
         this.WalutaRepozytorium=WalutaRepozytorium;
         this.FirmaRepozytorium=FirmaRepozytorium;
         this.FakturyKosztoweRepozytorium=FakturyKosztoweRepozytorium;
+        this.NumerRepozytorium=NumerRepozytorium;
+        this.StawkavatRepozytorium=StawkavatRepozytorium;
+        this.FakutraRepozytorium=FakutraRepozytorium;
 
         metody.StworzNapis(this, lLogin, "Login", 10, 10, 100, 20);
         metody.StworzNapis(this, lHaslo, "Hasło", 10, 40, 100, 20);
@@ -118,7 +128,7 @@ public class Logowanie extends JFrame {
                         }
                         else {
                             OknoGlowneProgramu oknoGlowneProgramu=new OknoGlowneProgramu(user.getId(),uzytkownicyRepozytorium,javaMailSender,KrajRepozytorium,ZleceniodawcaRepozytorium,PrzewoznikRepozytorium,WykonawcaRepozytorium,
-                                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium,FirmaRepozytorium,FakturyKosztoweRepozytorium);
+                                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium,FirmaRepozytorium,FakturyKosztoweRepozytorium,NumerRepozytorium,StawkavatRepozytorium,FakutraRepozytorium);
                             oknoGlowneProgramu.setVisible(true);
                         }
                     }

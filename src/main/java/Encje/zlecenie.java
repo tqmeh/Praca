@@ -13,6 +13,7 @@ public class zlecenie {
     private int id;
     private String wykonawca;
     private String numerfakturykosztowej;
+    private String numerfaktury;
     private String zlecemiodawca_nazwa_skrocona;
     private String numer_zlecenia;
     private String rodzaj_towaru;
@@ -48,9 +49,10 @@ public class zlecenie {
 
     }
 
-    public zlecenie(String wykonawca, String numerfakturykosztowej, String zlecemiodawca_nazwa_skrocona, String numer_zlecenia, String rodzaj_towaru, int ilosc, int waga, String kraj_zaladunku, String data_zaladunku, String miejscowosc_zaladunku, String kod_pocztowy_zaladunku, String ulica_zaladunku, String firma_zaladunek, String przewoznik_nazwa_skrocona, String rodzaj_samochodu, String kierowca, String numery_rejestracyjne, String kraj_rozladunku, String data_rozladunku, String miejscowosc_rozladunku, String kod_pocztowy_rozladunku, String ulica_rozladunku, String firma_rozladunek, Double kwota_frachtu, Double kwota_zlecenia, String waluta, String warunku_zlecenia, String nazwa_firmy, int id_firmy, String nazwa_uzytkownika) {
+    public zlecenie(String wykonawca, String numerfakturykosztowej,String numerfaktury, String zlecemiodawca_nazwa_skrocona, String numer_zlecenia, String rodzaj_towaru, int ilosc, int waga, String kraj_zaladunku, String data_zaladunku, String miejscowosc_zaladunku, String kod_pocztowy_zaladunku, String ulica_zaladunku, String firma_zaladunek, String przewoznik_nazwa_skrocona, String rodzaj_samochodu, String kierowca, String numery_rejestracyjne, String kraj_rozladunku, String data_rozladunku, String miejscowosc_rozladunku, String kod_pocztowy_rozladunku, String ulica_rozladunku, String firma_rozladunek, Double kwota_frachtu, Double kwota_zlecenia, String waluta, String warunku_zlecenia, String nazwa_firmy, int id_firmy, String nazwa_uzytkownika) {
         this.wykonawca = wykonawca;
         this.numerfakturykosztowej = numerfakturykosztowej;
+        this.numerfaktury=numerfaktury;
         this.zlecemiodawca_nazwa_skrocona = zlecemiodawca_nazwa_skrocona;
         this.numer_zlecenia = numer_zlecenia;
         this.rodzaj_towaru = rodzaj_towaru;
@@ -327,5 +329,13 @@ public class zlecenie {
 
     public void setNazwa_uzytkownika(String nazwa_uzytkownika) {
         this.nazwa_uzytkownika = nazwa_uzytkownika;
+    }
+
+    public String getNumerfaktury() {
+        return numerfaktury;
+    }
+
+    public void setNumerfaktury(String numerfaktury) {
+        this.numerfaktury = numerfaktury;
     }
 }

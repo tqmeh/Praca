@@ -57,8 +57,11 @@ public class UstawieniaWlasciciel extends JFrame {
         bMinus.addActionListener(e -> {
             UsunzBazyDanych();
         });
+
+
         panelZachodni.add(bDodaj);
         panelZachodni.add(bMinus);
+
         add(panelZachodni);
         add(panelZachodni);
 

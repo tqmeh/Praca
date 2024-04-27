@@ -25,12 +25,16 @@ public class OknoGlowneProgramu extends JFrame {
      zlecenieRepozytorium ZlecenieRepozytorium;
 
      walutaRepozytorium WalutaRepozytorium;
+     numerRepozytorium NumerRepozytorium;
 
+     stawkavatRepozytorium StawkavatRepozytorium;
      fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium;
+     fakutraRepozytorium FakutraRepozytorium;
     public OknoGlowneProgramu(int userID, uzytkownicyRepozytorium UzytkownicyRepozytorium,JavaMailSender javaMailSender,krajRepozytorium KrajRepozytorium,
                               zleceniodawcaRepozytorium ZleceniodawcaRepozytorium, przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,
                               samochodRepozytorium SamochodRepozytorium,towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium,
-                              firmaRepozytorium FirmaRepozytorium, fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium)
+                              firmaRepozytorium FirmaRepozytorium, fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium,numerRepozytorium NumerRepozytorium,
+                              stawkavatRepozytorium StawkavatRepozytorium,fakutraRepozytorium FakutraRepozytorium)
     {
         this.KrajRepozytorium=KrajRepozytorium;
         this.userID=userID;
@@ -45,6 +49,9 @@ public class OknoGlowneProgramu extends JFrame {
         this.WalutaRepozytorium=WalutaRepozytorium;
         this.FirmaRepozytorium=FirmaRepozytorium;
         this.FakturyKosztoweRepozytorium=FakturyKosztoweRepozytorium;
+        this.NumerRepozytorium=NumerRepozytorium;
+        this.StawkavatRepozytorium=StawkavatRepozytorium;
+        this.FakutraRepozytorium=FakutraRepozytorium;
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
         JPanel panelPolnocny=new JPanel();
@@ -72,7 +79,8 @@ public class OknoGlowneProgramu extends JFrame {
         });
         bZlecenie.addActionListener(e -> {
             Zlecenie zlecenie=new Zlecenie(KrajRepozytorium,UzytkownicyRepozytorium,ZleceniodawcaRepozytorium,userID,PrzewoznikRepozytorium,WykonawcaRepozytorium,
-                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium,FirmaRepozytorium,FakturyKosztoweRepozytorium);
+                    SamochodRepozytorium,TowarRepozytorium,ZlecenieRepozytorium,WalutaRepozytorium,FirmaRepozytorium,FakturyKosztoweRepozytorium,NumerRepozytorium,StawkavatRepozytorium,
+                    FakutraRepozytorium);
             zlecenie.setVisible(true);
             System.out.println("Numer Id to "+userID);
         });

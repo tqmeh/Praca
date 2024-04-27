@@ -1,10 +1,12 @@
 package PoboczneOkna;
 
+import Encje.faktura;
 import Encje.fakturykosztowe;
 import Encje.zlecenie;
 import Metody.Metody;
 import Ograniczenia.LimitowanyText;
 import Repozytoria.*;
+import com.toedter.calendar.JDateChooser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -18,8 +20,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.transaction.Transactional;
 import javax.xml.crypto.Data;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +34,7 @@ public class Zlecenie extends JFrame {
 
     JPanel panelZachodni;
     Metody metody=new Metody();
-    JButton bDodaj,bUsun,bGenerujZlecenie,bDodajFaktureKosztowa;
+    JButton bDodaj,bUsun,bGenerujZlecenie,bDodajFaktureKosztowa,bDodajFakture,bGenerujFakture;
     krajRepozytorium KrajRepozytorium;
     uzytkownicyRepozytorium UzytkownicyRepozytorium;
     zleceniodawcaRepozytorium ZleceniodawcaRepozytorium;
@@ -39,18 +46,25 @@ public class Zlecenie extends JFrame {
     zlecenieRepozytorium ZlecenieRepozytorium;
     walutaRepozytorium WalutaRepozytorium;
     fakturykosztoweRepozytoirum  FakturyKosztoweRepozytorium;
+    numerRepozytorium NumerRepozytorium;
+
+    fakutraRepozytorium FakutraRepozytorium;
+    stawkavatRepozytorium StawkavatRepozytorium;
     private int userID;
     int IdFirmy;
     int IdZlecenia,idFirmyProgramu;
-    double kwota;
+    double kwota,KwotaBrutto,KwotaNetto;
     DefaultTableModel model;
     JTable table;
     String sNazwafirmy,sUlica,sDom,sMieszkanie,sKodPocztowy,sMiastp,sNip,sRegon,sKwota,sKontoPLN,sKontoEuro,sIban,sSwift,sNumerFaktury,WalutaZLecenia,
-            nazwaFirmyProgramu;
+            nazwaFirmyProgramu,sDataSprzedazy,sDataWystawienia;
+
+    String Wybranastawka;
     public Zlecenie(krajRepozytorium KrajRepozytorium, uzytkownicyRepozytorium UytkownicyRepozytorium,zleceniodawcaRepozytorium ZleceniodawcaRepozytorium,
                     int userID,przewoznikRepozytorium PrzewoznikRepozytorium,wykonawcaRepozytorium WykonawcaRepozytorium,samochodRepozytorium SamochodRepozytorium,
                     towarRepozytorium TowarRepozytorium,zlecenieRepozytorium ZlecenieRepozytorium,walutaRepozytorium WalutaRepozytorium,firmaRepozytorium FirmaRepozytorium,
-                    fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium)
+                    fakturykosztoweRepozytoirum FakturyKosztoweRepozytorium, numerRepozytorium NumerRepozytorium,stawkavatRepozytorium StawkavatRepozytorium,
+                    fakutraRepozytorium FakutraRepozytorium)
     {
         this.KrajRepozytorium=KrajRepozytorium;
         this.UzytkownicyRepozytorium=UytkownicyRepozytorium;
@@ -63,6 +77,9 @@ public class Zlecenie extends JFrame {
         this.WalutaRepozytorium=WalutaRepozytorium;
         this.FirmaRepozytorium=FirmaRepozytorium;
         this.FakturyKosztoweRepozytorium=FakturyKosztoweRepozytorium;
+        this.NumerRepozytorium=NumerRepozytorium;
+        this.StawkavatRepozytorium=StawkavatRepozytorium;
+        this.FakutraRepozytorium=FakutraRepozytorium;
         IdFirmy=UzytkownicyRepozytorium.findFirmaIdByUserId(userID);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
@@ -87,7 +104,7 @@ public class Zlecenie extends JFrame {
         bUsun.addActionListener(e -> {
             UsunzBazyDanych();
         });
-        bGenerujZlecenie=metody.StworzPrzyciskzObrazemzTekstemObok(bGenerujZlecenie,"Generuj zlecenie",Usun1,100,20);
+        bGenerujZlecenie=metody.StworzPrzyciskzObrazemzTekstemObok(bGenerujZlecenie,"Zapisz zlecenie pdf",Usun1,100,20);
         bGenerujZlecenie.setEnabled(false);
         bGenerujZlecenie.addActionListener(e -> {
             try {
@@ -101,6 +118,14 @@ public class Zlecenie extends JFrame {
 
 
         });
+        bGenerujFakture=metody.StworzPrzyciskzObrazemzTekstemObok(bGenerujFakture,"Zapisz fakturę pdf",Usun1,100,20);
+
+
+        bDodajFakture=metody.StworzPrzyciskzObrazemzTekstemObok(bDodajFakture,"Dodaj fakturę",Usun1,200,20);
+        bDodajFakture.setEnabled(false);
+        bDodajFakture.addActionListener(e -> {
+            PrzyciskDodajFakture();
+        });
 
         bDodajFaktureKosztowa=metody.StworzPrzyciskzObrazemzTekstemObok(bDodajFaktureKosztowa,"Dodaj fakturę kosztową",Usun1,200,20);
         bDodajFaktureKosztowa.setEnabled(false);
@@ -110,6 +135,8 @@ public class Zlecenie extends JFrame {
         panelZachodni.add(bDodaj);
         panelZachodni.add(bUsun);
         panelZachodni.add(bGenerujZlecenie);
+        panelZachodni.add(bGenerujFakture);
+        panelZachodni.add(bDodajFakture);
         panelZachodni.add(bDodajFaktureKosztowa);
         add(panelZachodni);
         setVisible(true);
@@ -121,7 +148,7 @@ public class Zlecenie extends JFrame {
     public void WyswietlTabele()
     {
         List<Encje.zlecenie> zlecenieList=ZlecenieRepozytorium.findCompanyByFirmaId(IdFirmy);
-        Object[][] dane=new Object[zlecenieList.size()][16];
+        Object[][] dane=new Object[zlecenieList.size()][18];
         for(int i=0;i<zlecenieList.size();i++)
         {
             zlecenie zlecenie1=zlecenieList.get(i);
@@ -129,21 +156,23 @@ public class Zlecenie extends JFrame {
             dane[i][1]=zlecenie1.getWykonawca();
             dane[i][2]=zlecenie1.getPrzewoznik_nazwa_skrocona();
             dane[i][3]=zlecenie1.getZlecemiodawca_nazwa_skrocona();
-            dane[i][4]=zlecenie1.getRodzaj_towaru();
-            dane[i][5]=zlecenie1.getIlosc();
-            dane[i][6]=zlecenie1.getWaga();
-            dane[i][7]=zlecenie1.getKraj_zaladunku();
-            dane[i][8]=zlecenie1.getData_zaladunku();
-            dane[i][9]=zlecenie1.getMiejscowosc_zaladunku();
-            dane[i][10]=zlecenie1.getKraj_rozladunku();
-            dane[i][11]=zlecenie1.getData_rozladunku();
-            dane[i][12]=zlecenie1.getMiejscowosc_rozladunku();
-            dane[i][13]=zlecenie1.getKwota_frachtu();
-            dane[i][14]=zlecenie1.getKwota_zlecenia();
-            dane[i][15]=zlecenie1.getWaluta();
+            dane[i][4]=zlecenie1.getNumerfakturykosztowej();
+            dane[i][5]=zlecenie1.getNumerfaktury();
+            dane[i][6]=zlecenie1.getRodzaj_towaru();
+            dane[i][7]=zlecenie1.getIlosc();
+            dane[i][8]=zlecenie1.getWaga();
+            dane[i][9]=zlecenie1.getKraj_zaladunku();
+            dane[i][10]=zlecenie1.getData_zaladunku();
+            dane[i][11]=zlecenie1.getMiejscowosc_zaladunku();
+            dane[i][12]=zlecenie1.getKraj_rozladunku();
+            dane[i][13]=zlecenie1.getData_rozladunku();
+            dane[i][14]=zlecenie1.getMiejscowosc_rozladunku();
+            dane[i][15]=zlecenie1.getKwota_frachtu();
+            dane[i][16]=zlecenie1.getKwota_zlecenia();
+            dane[i][17]=zlecenie1.getWaluta();
         }
         String[] NazwyKolumn={
-                "ID","Wykonawca","Zleceniobiorca","Zleceniodawca","Rodzaj towaru","Ilosc","Waga","KrajZaladunku","Data załadunku","Miejscowość załadunku",
+                "ID","Wykonawca","Zleceniobiorca","Zleceniodawca","Numer faktury kosztowej","Numer faktury","Rodzaj towaru","Ilosc","Waga","KrajZaladunku","Data załadunku","Miejscowość załadunku",
                 "Kraj rozładunku","Data rozładunku","Miejscowość rozładunku","Kwota frachtu","Kwota zlecenia","Waluta"
         };
         model = new DefaultTableModel(dane, NazwyKolumn);
@@ -161,14 +190,39 @@ public class Zlecenie extends JFrame {
                         int WybranyWiersz=table.getSelectedRow();
                         int Id = (Integer) table.getValueAt(WybranyWiersz, 0);
                         String wykonawca=ZlecenieRepozytorium.findWykonawcaId(Id);
+                        String numerFaktury=ZlecenieRepozytorium.findNumerFakturyId(Id);
+                        String numerFakturyKosztowej=ZlecenieRepozytorium.findNumerFakturKosztowejyId(Id);
                         if(wykonawca.equals("Wlasny transport"))
                         {
                             bDodajFaktureKosztowa.setEnabled(false);
+                            if(numerFaktury!=null) {
+                                bDodajFakture.setEnabled(false);
+                            }
+                            else
+                            {
+                                bDodajFakture.setEnabled(true);
+                            }
                         }
                         else
                         {
-                            bDodajFaktureKosztowa.setEnabled(true);
+
+                            if(numerFaktury!=null) {
+                                bDodajFakture.setEnabled(false);
+                            }
+                            else
+                            {
+                                bDodajFakture.setEnabled(true);
+                            }
+                            if(numerFakturyKosztowej!=null)
+                            {
+                                bDodajFaktureKosztowa.setEnabled(false);
+                            }
+                            else
+                            {
+                                bDodajFaktureKosztowa.setEnabled(true);
+                            }
                         }
+
 
                     }
                     else
@@ -343,10 +397,346 @@ public class Zlecenie extends JFrame {
 
         }
     }
+    public void PrzyciskDodajFakture()
+    {
+        JDialog jNoweOknoDialogowe=new JDialog();
+        jNoweOknoDialogowe.setTitle("Dodaj fakturę");
+        jNoweOknoDialogowe.setSize(800,600);
+        jNoweOknoDialogowe.setLayout(null);
+        jNoweOknoDialogowe.setVisible(true);
+        jNoweOknoDialogowe.setLocationRelativeTo(null);
+
+        int WybranyWiersz=table.getSelectedRow();
+        IdZlecenia = (Integer) table.getValueAt(WybranyWiersz, 0);
+        System.out.println("ID firmy to "+IdFirmy);
+        int maxNumerWBazieNumer=ZnajdzNajwiekszyNumer();//pobieram z bazy najwiekszy numer dla danego id firmy
+        LocalDate aktualnyczas=LocalDate.now();// biore czas
+        int aktualnyrok=aktualnyczas.getYear();
+        String sAktualnyrok=String.valueOf(aktualnyrok);
+        String numer=String.valueOf(maxNumerWBazieNumer);
+        sNumerFaktury=numer+"/"+sAktualnyrok;//numer faktury skonwertowany na to co potrzebujemy
+        String ZleceniodawcaNazwaSkrocona=ZlecenieRepozytorium.findZleceniodawcaById(IdZlecenia);
+        System.out.println("Nazwa krotka zleceniodawcy to "+ZleceniodawcaNazwaSkrocona);
+        int IDZleceniodawcy=ZleceniodawcaRepozytorium.findNazwaPelnaFirmyById(ZleceniodawcaNazwaSkrocona);
+        sNazwafirmy=ZleceniodawcaRepozytorium.findNazwaPelnaById(IDZleceniodawcy);
+        sUlica=ZleceniodawcaRepozytorium.findulicaById(IDZleceniodawcy);
+        sDom=ZleceniodawcaRepozytorium.findNumer_DomuById(IDZleceniodawcy);
+        sMieszkanie=ZleceniodawcaRepozytorium.findNumerMieszkaniaById(IDZleceniodawcy);
+        sKodPocztowy=ZleceniodawcaRepozytorium.findKod_PocztowyById(IDZleceniodawcy);
+        sMiastp=ZleceniodawcaRepozytorium.findMiastoId(IDZleceniodawcy);
+        sNip=ZleceniodawcaRepozytorium.findNIPById(IDZleceniodawcy);
+        sRegon=ZleceniodawcaRepozytorium.findRegonId(IDZleceniodawcy);
+        sKwota=ZlecenieRepozytorium.findKwota_FrachtuId(IdZlecenia);
+        WalutaZLecenia=ZlecenieRepozytorium.findWalutaId(IdZlecenia);
+        nazwaFirmyProgramu=ZlecenieRepozytorium.findNazwaFirmyProgramuId(IdZlecenia);
+        String kraj=ZleceniodawcaRepozytorium.findKRajById(IDZleceniodawcy);
+        idFirmyProgramu=ZlecenieRepozytorium.findIDFIRMYId(IdZlecenia);
+        if(sRegon.equals("0.0"))
+        {
+            sRegon="";
+        }
+
+
+        JLabel lFirma,lNazwa,lUlica,lKodPocztowy,lMiasto,lDane,lNip,lRegon,lDaneDoFaktury,lKontoPLN,lKontoEUR,lIban,lSwift,lSlash,
+                lKwota,lWaluta,lNumerFaktury,lKwotaBrutto,lKwotaZlecenia,lStawka,lStawkaVat,lWaluta1,lWaluta2,lDataWystawienia,lData,
+        lDataSprzedazy,lKraj;
+
+        JTextField tFirma,tUlica,tNumerDomu,tNumerMieszkania,tKodPocztowy,tMiasto,tNip,tRegon,tKwotaNetto,tNumerFaktury,tKwotaBrutto,tKwotaZlecenia,
+        tKraj;
+
+        JComboBox cStawkaVat;
+
+        JDateChooser dDataWystawienia,dDataSprzedazy;
+
+        JButton bZapisz;
+
+        LimitowanyText tKontoPLN,tKontoEUR,tIban,tSwift;
+
+        lFirma=new JLabel();
+        lNazwa=new JLabel();
+        lUlica=new JLabel();
+        lKodPocztowy=new JLabel();
+        lMiasto=new JLabel();
+        lDane=new JLabel();
+        lNip=new JLabel();
+        lRegon=new JLabel();
+        lDaneDoFaktury=new JLabel();
+        lKontoPLN=new JLabel();
+        lKontoEUR=new JLabel();
+        lIban=new JLabel();
+        lSwift=new JLabel();
+        lKwota=new JLabel();
+        lSlash=new JLabel();
+        lWaluta=new JLabel();
+        lNumerFaktury=new JLabel();
+        lKwotaBrutto=new JLabel();
+        lKwotaZlecenia=new JLabel();
+        lStawka=new JLabel();
+        lStawkaVat=new JLabel();
+        lWaluta1=new JLabel();
+        lWaluta2=new JLabel();
+        lDataWystawienia=new JLabel();
+        lData=new JLabel();
+        lDataSprzedazy=new JLabel();
+        lKraj=new JLabel();
+
+
+        tFirma=new JTextField();
+        tUlica=new JTextField();
+        tNumerDomu=new JTextField();
+        tNumerMieszkania=new JTextField();
+        tKodPocztowy=new JTextField();
+        tMiasto=new JTextField();
+        tNip=new JTextField();
+        tRegon=new JTextField();
+        tKwotaNetto=new JTextField();
+        tNumerFaktury=new JTextField();
+        tKwotaBrutto=new JTextField();
+        tKwotaZlecenia=new JTextField();
+        tKraj=new JTextField();
+
+        dDataWystawienia=new JDateChooser();
+        dDataSprzedazy=new JDateChooser();
+        cStawkaVat=new JComboBox();
+
+        bZapisz=new JButton();
+
+        tKontoPLN=new LimitowanyText(29,true);
+        tKontoEUR=new LimitowanyText(29,true);
+        tIban=new LimitowanyText(20,false);
+        tSwift=new LimitowanyText(20,false);
+
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lFirma,"Firma",10,10,100,10);
+        lFirma.setFont(lFirma.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lNazwa,"Nazwa",10,40,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lUlica,"Ulica",10,70,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKodPocztowy,"Kod pocztowy",10,100,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lMiasto,"Miasto",10,130,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKraj,"Kraj",10,160,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lStawka,"Stawka",10,190,100,20);
+        lStawka.setFont(lStawka.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKwotaZlecenia,"Kwota Zlecenia",10,220,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lWaluta,"",230,220,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lStawkaVat,"Stawka Vat",10,250,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lData,"Wybierz date faktury",10,300,150,20);
+        lData.setFont(lData.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lDataWystawienia,"Data wystawienia",10,330,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lDataSprzedazy,"Data sprzedaży",10,360,150,20);
+
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lDane,"Dane",400,10,100,20);
+        lDane.setFont(lFirma.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lNip,"NIP",400,40,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lRegon,"Regon",400,70,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lDaneDoFaktury,"Dane  faktury",400,100,150,20);
+        lDaneDoFaktury.setFont(lFirma.getFont().deriveFont(Font.BOLD));
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKwota,"Kwota netto",400,130,130,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lWaluta1,"",620,130,130,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKwotaBrutto,"Kwota brutto",400,160,130,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lWaluta2,"",620,160,130,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKontoPLN,"Konto PLN",400,190,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lKontoEUR,"Konto EUR",400,220,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lIban,"IBAN",400,250,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lSwift,"Swift",400,280,100,20);
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lSlash,"/",325,70,20,20);
+
+        metody.StworzNapisJDialog(jNoweOknoDialogowe,lNumerFaktury,"Numer faktury",400,310,100,20);
+
+
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tFirma,120,40,250,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tUlica,120,70,160,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tNumerDomu,290,70,30,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tNumerMieszkania,335,70,30,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tKodPocztowy,120,100,100,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tMiasto,120,130,160,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tKraj,120,160,160,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tKwotaZlecenia,120,220,100,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tNip,510,40,150,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tRegon,510,70,150,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tKwotaNetto,510,130,100,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tKwotaBrutto,510,160,100,20);
+        metody.StworzJTextFieldJDialog(jNoweOknoDialogowe,tNumerFaktury,510,310,150,20);
+
+        metody.StworzLimitowanyTextjDialog(tKontoPLN,510,190,160,20,jNoweOknoDialogowe);
+        metody.StworzLimitowanyTextjDialog(tKontoEUR,510,220,160,20,jNoweOknoDialogowe);
+        metody.StworzLimitowanyTextjDialog(tIban,510,250,160,20,jNoweOknoDialogowe);
+        metody.StworzLimitowanyTextjDialog(tSwift,510,280,160,20,jNoweOknoDialogowe);
+
+
+        metody.StworzJButtonJDialog(jNoweOknoDialogowe,bZapisz,"Zapisz",220,400,150,20);
+
+        dDataWystawienia.setBounds(130,330,100,20);
+        dDataSprzedazy.setBounds(130,360,100,20);
+        cStawkaVat.setBounds(120,250,100,20);
+        DodajDaneStawkaVatJComboBoxa(cStawkaVat);
+
+        tFirma.setEditable(false);
+        tUlica.setEditable(false);
+        tNumerDomu.setEditable(false);
+        tNumerMieszkania.setEditable(false);
+        tKodPocztowy.setEditable(false);
+        tMiasto.setEditable(false);
+        tNip.setEditable(false);
+        tRegon.setEditable(false);
+        tKwotaNetto.setEditable(false);
+        tNumerFaktury.setEditable(false);
+        tKwotaBrutto.setEditable(false);
+        tKwotaZlecenia.setEditable(false);
+        tKraj.setEditable(false);
+
+
+        tFirma.setText(sNazwafirmy);
+        tUlica.setText(sUlica);
+        tNumerDomu.setText(sDom);
+        tNumerMieszkania.setText(sMieszkanie);
+        tKodPocztowy.setText(sKodPocztowy);
+        tMiasto.setText(sMiastp);
+        tNip.setText(sNip);
+        tKraj.setText(kraj);
+        tRegon.setText(sRegon);
+        tNumerFaktury.setText(sNumerFaktury);
+        tKwotaZlecenia.setText(sKwota);
+        lWaluta.setText(WalutaZLecenia);
+        lWaluta1.setText(WalutaZLecenia);
+        lWaluta2.setText(WalutaZLecenia);
+
+        cStawkaVat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String sKwotaBrutto,sKwotaNetto;
+                Wybranastawka=(String) cStawkaVat.getSelectedItem();
+                kwota=Double.parseDouble(sKwota);
+                if(!Wybranastawka.equals("NP"))
+                {
+                    double stawka1=Double.parseDouble(Wybranastawka);
+                    if(stawka1==0.0)
+                    {
+                        KwotaBrutto=kwota;
+                        KwotaNetto=kwota;
+                         sKwotaBrutto=String.valueOf(KwotaBrutto);
+                         sKwotaNetto=String.valueOf(KwotaNetto);
+                        tKwotaBrutto.setText(sKwotaBrutto);
+                        tKwotaNetto.setText(sKwotaNetto);
+                        System.out.println("Kwota w double brutto wynosi "+KwotaBrutto);
+
+                    }
+                    else
+                    {
+                        stawka1=1.23;
+                        KwotaBrutto=kwota*stawka1;
+                        KwotaNetto=kwota;
+                        sKwotaBrutto=String.valueOf(KwotaBrutto);
+                        tKwotaBrutto.setText(sKwotaBrutto);
+                        sKwotaNetto=String.valueOf(KwotaNetto);
+                        tKwotaNetto.setText(sKwotaNetto);
+
+                    }
+                }
+                else
+                {
+                    KwotaBrutto=kwota;
+                    KwotaNetto=kwota;
+                    sKwotaBrutto=String.valueOf(KwotaBrutto);
+                    tKwotaBrutto.setText(sKwotaBrutto);
+                    sKwotaNetto=String.valueOf(KwotaNetto);
+                    tKwotaNetto.setText(sKwotaNetto);
+                }
+
+
+
+            }// automatycznie wybieraie kwoty netto i brutto z comboboxa
+        });
+
+        bZapisz.addActionListener(e -> {
+
+            PobierzzFaktury(kraj,sKontoPLN,tKontoPLN,sKontoEuro,tKontoEUR,sIban,tIban,sSwift,tSwift,Wybranastawka,sDataWystawienia,
+                    sDataSprzedazy,dDataWystawienia,dDataSprzedazy);
+
+        });
+        jNoweOknoDialogowe.add(cStawkaVat);
+        jNoweOknoDialogowe.add(dDataWystawienia);
+        jNoweOknoDialogowe.add(dDataSprzedazy);
+    }
+    public void PobierzzFaktury(String Kraj,String KontoPLN,JTextField tKontoPLN1,String KontoEUR, JTextField tKontroEUR1,
+                                String IBAN, JTextField tIBAN1,String Swift,JTextField tSwift1,String wybrany,String datawystawienia,
+                                String datasprzedazy,JDateChooser datawystawienia1,JDateChooser datasprzedazy1)
+    {
+        KontoPLN=tKontoPLN1.getText().trim();
+        KontoEUR=tKontroEUR1.getText().trim();
+        IBAN=tIBAN1.getText().trim();
+        Swift=tSwift1.getText().trim();
+
+
+
+        /* if(!Kraj.isEmpty())
+        {
+            if(Kraj.equals("Polska"))
+            {
+                if(KontoPLN.isEmpty())
+                {
+                    metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru konta PLN");
+                }
+            }
+            else
+            {
+                if(KontoEUR.isEmpty())
+                {
+                    metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru konta EUR");
+                }
+                else if(IBAN.isEmpty())
+                {
+                    metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru IBAN");
+                }
+                else if(Swift.isEmpty())
+                {
+                    metody.WyswietlKomunikatoBledzie("Nie wpisałeś numeru Swift");
+                }
+            }
+            if(wybrany==null)
+            {
+                metody.WyswietlKomunikatoBledzie("Nie wybrałeś stawki VAT !");
+            }
+            Date data=datawystawienia1.getDate();
+            if(data==null)
+            {
+                metody.WyswietlKomunikatoBledzie("Nie wybrałeś daty wystawienia faktury !");
+            }
+            Date data1=datasprzedazy1.getDate();
+            if(data1==null)
+            {
+                metody.WyswietlKomunikatoBledzie("Nie wybrałeś daty sprzedazy faktury !");
+            }
+
+        }*/
+
+
+             Date wybrana_data=datawystawienia1.getDate();
+             Date wybrana_data1=datasprzedazy1.getDate();
+             SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+             datawystawienia=dateFormat.format(wybrana_data);
+             datasprzedazy=dateFormat.format(wybrana_data1);
+
+             System.out.println("rozpoczynam zapis");
+            Encje.faktura faktura=new faktura(IdZlecenia,sNazwafirmy,sUlica,sDom,sMieszkanie,sKodPocztowy,sMiastp,Kraj,kwota,Wybranastawka,datawystawienia,datasprzedazy,sNip,
+                    sRegon,KwotaNetto,KwotaBrutto,KontoPLN,KontoEUR,WalutaZLecenia,IBAN,Swift,sNumerFaktury,nazwaFirmyProgramu,idFirmyProgramu);
+
+            FakutraRepozytorium.save(faktura);
+
+            Optional<zlecenie>optionalZlecenie=ZlecenieRepozytorium.findById(IdZlecenia);
+            if(optionalZlecenie.isPresent())
+            {
+                zlecenie zleceniedo=optionalZlecenie.get();
+                zleceniedo.setNumerfaktury(sNumerFaktury);
+                ZlecenieRepozytorium.save(zleceniedo);
+
+            }
+
+
+
+    }
     public void PrzyciskDodajFaktureKosztowa()
     {
         JDialog jNoweOknoDialogowe=new JDialog();
-        jNoweOknoDialogowe.setTitle("Dodaj firmę");
+        jNoweOknoDialogowe.setTitle("Dodaj fakturę kosztową");
         jNoweOknoDialogowe.setSize(800,400);
         jNoweOknoDialogowe.setLayout(null);
         jNoweOknoDialogowe.setVisible(true);
@@ -574,6 +964,27 @@ public String pobierz(JTextField textField)
 
 
     }
+    public int ZnajdzNajwiekszyNumer()
+    {
+        Integer MaxNumer=NumerRepozytorium.findMaxNumerByIdFirmy(IdFirmy);
+        if(MaxNumer!=null)
+        {
+            return MaxNumer+1;
+        }
+        else
+        {
+            return 1;
+        }
 
+    }
+public void DodajDaneStawkaVatJComboBoxa(JComboBox comboBox)
+{
+    List<Encje.stawkavat> stawkavats=StawkavatRepozytorium.findAll();
+    comboBox.removeAllItems();
+    for(Encje.stawkavat stawkavat:stawkavats)
+    {
+        comboBox.addItem(stawkavat.getStawka());
+    }
+}
 
 }
